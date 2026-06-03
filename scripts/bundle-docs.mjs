@@ -32,7 +32,15 @@ const result = await build({
   define: {
     "process.env.NODE_ENV": '"production"',
   },
-  // Guard rail: refuse to silently inline Node built-ins.
+  // Defensive: esbuild's IIFE output declares `var Modra = (...)()` at the
+  // script top-level. In a regular <script> that becomes window.Modra, but
+  // a) some hosting providers serve the file as a module and b) some
+  // tooling/browsers occasionally surprise us. Forcing the assignment
+  // costs ~25 bytes and removes an entire class of "playground silently
+  // does nothing" bug reports.
+  footer: {
+    js: "try{(typeof globalThis!==\"undefined\"?globalThis:self).Modra=Modra;}catch(e){}",
+  },
   external: [],
   logLevel: "info",
 });

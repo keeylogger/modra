@@ -12,7 +12,7 @@
 [![node](https://img.shields.io/badge/node-%E2%89%A520-155E2B?style=flat-square)](#)
 [![tests](https://img.shields.io/badge/tests-294%20passing-2E9D43?style=flat-square)](#)
 
-[📖 Docs](./README.html) · [▶ Live playground](./README.html#/playground) · [🚀 Quick start](#-quick-start) · [🆚 Comparisons](#-modra-vs-the-world) · [🧪 Examples](#-examples)
+[📖 Docs](https://keeylogger.github.io/modra/) · [▶ Live playground](https://keeylogger.github.io/modra/README.html#/playground) · [🚀 Quick start](#-quick-start) · [🆚 Comparisons](#-modra-vs-the-world) · [🧪 Examples](#-examples)
 
 </div>
 
@@ -525,7 +525,7 @@ cd dist && npm install && npm run dev
 
 ## 🧪 Examples
 
-Try each in the [live playground](./README.html#/playground).
+Try each in the [live playground](https://keeylogger.github.io/modra/README.html#/playground).
 
 | Example                | What it shows                                                |
 | ---------------------- | ------------------------------------------------------------ |
@@ -535,7 +535,7 @@ Try each in the [live playground](./README.html#/playground).
 | **Search-as-you-type** | Reactive list, debouncing pattern, server call from client   |
 | **Storefront**         | Loop rendering, cart state, multiple endpoints, DDL          |
 
-Each example lives in [`README.html#/examples`](./README.html#/examples). The
+Each example also lives in the [online docs](https://keeylogger.github.io/modra/README.html#/examples). The
 playground recompiles them in your browser on every keystroke.
 
 ---
@@ -584,7 +584,7 @@ error[MOD-S002]: Cannot find name 'Custmer'
 Modra is a single-author alpha right now, but PRs and issues are welcome.
 
 ```bash
-git clone https://github.com/your-org/modra
+git clone https://github.com/keeylogger/modra
 cd modra
 npm install
 npm test       # 294 tests
@@ -596,7 +596,7 @@ Areas where help is especially appreciated:
 - 🐛 Edge cases in the parser (the grammar is intentionally loose; bug reports help tighten it)
 - 🎨 More UI primitives + the `Style` design-token system
 - 🧪 More fixture examples for the playground
-- 📝 Tutorial-style docs for `README.html`
+- 📝 Tutorial-style docs (rendered at [keeylogger.github.io/modra](https://keeylogger.github.io/modra/))
 - 🔌 New native bridge adapters (Ruby, Elixir, …)
 
 ---
@@ -611,6 +611,6 @@ Areas where help is especially appreciated:
 
 ⚡ **Modra v1.0.0** · *one file, a whole web app.*
 
-[📖 Full docs](./README.html) · [▶ Live playground](./README.html#/playground) · [🐙 GitHub](https://github.com)
+[📖 Full docs](https://keeylogger.github.io/modra/) · [▶ Live playground](https://keeylogger.github.io/modra/README.html#/playground) · [🐙 GitHub](https://github.com/keeylogger/modra)
 
 </div>

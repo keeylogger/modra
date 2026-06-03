@@ -77,30 +77,64 @@
 
   // ─── Playground bootstrap ───────────────────────────────────
   let pgMounted = false;
+
+  function pgPaneStatus(message, isError) {
+    return `<div class="pg-pane" style="grid-column:1 / -1; padding:24px; text-align:center; color:${
+      isError ? "var(--danger)" : "var(--text-dim)"
+    }">${message}</div>`;
+  }
+
   function mountPlayground() {
     if (pgMounted) return;
     const root = document.getElementById("pg-root");
     if (!root) return;
 
-    // Wait for the bundle to define window.Modra
+    root.innerHTML = pgPaneStatus(
+      `<p style="margin:0 0 6px 0;font-weight:600">Loading the Modra compiler…</p>
+       <p style="margin:0;font-size:12px;color:var(--text-faint)">This usually takes under a second.</p>`,
+      false,
+    );
+
     let tries = 0;
+    const MAX_TRIES = 200; // 200 × 60ms = 12s of patience
     const iv = setInterval(() => {
-      if (window.Modra && window.ModraPlayground) {
+      tries++;
+      const hasModra = !!window.Modra;
+      const hasPg = !!window.ModraPlayground;
+
+      if (hasModra && hasPg) {
         clearInterval(iv);
         try {
           window.ModraPlayground.mount(root);
           pgMounted = true;
         } catch (err) {
-          root.innerHTML = `<div class="pg-pane" style="grid-column:1 / -1; padding:24px; color:var(--danger)">
-            Failed to mount the playground: ${(err && err.message) || err}
-          </div>`;
+          console.error("[Modra playground] mount failed:", err);
+          root.innerHTML = pgPaneStatus(
+            `<p style="margin:0 0 6px 0;font-weight:600">Could not mount the playground.</p>
+             <p style="margin:0;font-size:12px">${(err && err.message) || err}</p>
+             <p style="margin:8px 0 0 0;font-size:11px;color:var(--text-faint)">Open the browser console for the full stack trace.</p>`,
+            true,
+          );
         }
-      } else if (tries++ > 100) {
+        return;
+      }
+
+      if (tries > MAX_TRIES) {
         clearInterval(iv);
-        root.innerHTML = `<div class="pg-pane" style="grid-column:1 / -1; padding:24px; color:var(--danger)">
-          Could not load the Modra compiler bundle (<code>docs/modra-bundle.js</code>).<br/>
-          Run <code>npm run docs</code> to rebuild it.
-        </div>`;
+        const missing = [
+          hasModra ? null : "<code>window.Modra</code> (from <code>docs/modra-bundle.js</code>)",
+          hasPg    ? null : "<code>window.ModraPlayground</code> (from <code>docs/playground.js</code>)",
+        ].filter(Boolean).join(" and ");
+        console.error("[Modra playground] timed out waiting for", missing);
+        root.innerHTML = pgPaneStatus(
+          `<p style="margin:0 0 6px 0;font-weight:600">Could not load the playground.</p>
+           <p style="margin:0;font-size:12px">Missing ${missing}.</p>
+           <p style="margin:8px 0 0 0;font-size:11px;color:var(--text-faint)">
+             Try a hard refresh (<span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">R</span>)
+             or open the browser console for details.
+           </p>`,
+          true,
+        );
       }
     }, 60);
   }

@@ -469,3 +469,4 @@ ${l}`;return e.hint&&(c+=`
 ${S}
 ${v}
     ${c}`}var bt={red:"\x1B[31m",yellow:"\x1B[33m",blue:"\x1B[34m",cyan:"\x1B[36m",dim:"\x1B[2m",reset:"\x1B[0m"};function B(e,t,n){return t?bt[n]+e+bt.reset:e}return At(jr);})();
+try{(typeof globalThis!=="undefined"?globalThis:self).Modra=Modra;}catch(e){}

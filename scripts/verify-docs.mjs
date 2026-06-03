@@ -121,6 +121,26 @@ while ((mdMatch = mdRe.exec(md))) {
 }
 if (!mdBad) ok(`all ${mdIdx} README.md Modra blocks parse cleanly`);
 
+// ─── No raw HTML inside <code> blocks ─────────────────────────
+// Raw `<X>` tags inside a code block get parsed as real DOM elements by
+// the browser, which corrupts surrounding sections (this exact bug took
+// the live playground offline once already — see CHANGELOG).
+console.log("\nChecking that <code> blocks don't contain raw HTML tags …");
+const codeRx = /<code(?:\s[^>]*)?>([\s\S]*?)<\/code>/g;
+const tagRx = /<\/?[A-Za-z][A-Za-z0-9]*\b/g;
+let rawTagCount = 0;
+let cm;
+while ((cm = codeRx.exec(html))) {
+  const inner = cm[1];
+  const hits = inner.match(tagRx);
+  if (hits) rawTagCount += hits.length;
+}
+if (rawTagCount === 0) {
+  ok("no raw HTML tags inside <code> blocks");
+} else {
+  bad(`${rawTagCount} raw HTML tag(s) inside <code> blocks — run \`node scripts/fix-raw-html.mjs\``);
+}
+
 if (process.exitCode) {
   console.error("\nVerification failed.");
 } else {

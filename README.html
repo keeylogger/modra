@@ -1780,5 +1780,101 @@ Component: Storefront -> (
   <script src="./docs/playground.js"  defer></script>
   <script src="./docs/modra-bundle.js" defer></script>
   <script src="./docs/router.js" defer></script>
+
+  <!--
+    Self-diagnostic + safety-net.
+    Inline (NOT deferred) on purpose so it runs even if every external
+    script is blocked or fails. It (a) installs a fail-loud global error
+    handler that paints any uncaught error into the page, and (b) after
+    the page has finished loading, watchdogs the playground area and
+    surfaces a clear, actionable message if it's still empty.
+  -->
+  <script>
+  (function () {
+    "use strict";
+
+    function paintNotice(html, isError) {
+      var root = document.getElementById("pg-root");
+      if (!root) return;
+      root.innerHTML =
+        '<div class="pg-pane" style="grid-column:1 / -1; padding:24px; text-align:center; color:' +
+        (isError ? "var(--danger)" : "var(--text-dim)") + '">' + html + '</div>';
+    }
+
+    window.addEventListener("error", function (ev) {
+      var msg = (ev && (ev.message || (ev.error && ev.error.message))) || "Unknown error";
+      var src = (ev && ev.filename) ? ev.filename.split("/").pop() : "";
+      console.error("[Modra] uncaught:", ev && ev.error ? ev.error : msg);
+      paintNotice(
+        '<p style="margin:0 0 6px 0;font-weight:600">A script error broke the docs.</p>' +
+        '<p style="margin:0;font-size:12px">' + String(msg).replace(/</g, "&lt;") +
+        (src ? " <em>(in " + src + ")</em>" : "") + '</p>' +
+        '<p style="margin:8px 0 0 0;font-size:11px;color:var(--text-faint)">' +
+        'See the browser console (F12) for the full stack trace.</p>',
+        true
+      );
+    });
+
+    function looksUnstarted(root) {
+      if (!root) return false;
+      var t = (root.textContent || "").trim();
+      return /Loading the Modra compiler bundle/.test(t);
+    }
+
+    function diagnose() {
+      var route = (location.hash || "#/");
+      if (route !== "#/playground") return;
+
+      var root = document.getElementById("pg-root");
+      if (!root) {
+        console.error("[Modra] #pg-root is missing from the DOM");
+        return;
+      }
+      if (!looksUnstarted(root)) return; // Router/playground already took over.
+
+      var hasBundle = !!window.Modra;
+      var hasPg     = !!window.ModraPlayground;
+      var missing = [];
+      if (!hasBundle) missing.push("<code>window.Modra</code> (docs/modra-bundle.js)");
+      if (!hasPg)     missing.push("<code>window.ModraPlayground</code> (docs/playground.js)");
+
+      console.warn("[Modra] watchdog: playground area is still empty after load.", {
+        "window.Modra": hasBundle, "window.ModraPlayground": hasPg
+      });
+
+      if (missing.length) {
+        paintNotice(
+          '<p style="margin:0 0 6px 0;font-weight:600">The playground could not start.</p>' +
+          '<p style="margin:0;font-size:12px">Missing: ' + missing.join(" and ") + '.</p>' +
+          '<p style="margin:8px 0 0 0;font-size:11px;color:var(--text-faint)">' +
+          'A browser extension (uBlock / Brave Shields / corporate proxy) is the usual culprit. ' +
+          'Try a private window, or a hard refresh (Ctrl+Shift+R / Cmd+Shift+R).</p>',
+          true
+        );
+        return;
+      }
+
+      // The bundle + playground are both loaded but nobody mounted yet.
+      // That can happen if the router crashed silently. Try to mount directly.
+      try {
+        window.ModraPlayground.mount(root);
+      } catch (err) {
+        console.error("[Modra] watchdog: direct mount failed:", err);
+        paintNotice(
+          '<p style="margin:0 0 6px 0;font-weight:600">Could not mount the playground.</p>' +
+          '<p style="margin:0;font-size:12px">' + String((err && err.message) || err).replace(/</g, "&lt;") + '</p>',
+          true
+        );
+      }
+    }
+
+    function arm() {
+      // Give the deferred scripts a beat to finish, then check.
+      setTimeout(diagnose, 1800);
+    }
+    if (document.readyState === "complete") arm();
+    else window.addEventListener("load", arm);
+  })();
+  </script>
 </body>
 </html>

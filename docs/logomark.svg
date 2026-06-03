@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Modra mark">
+  <title>Modra mark</title>
+  <!-- Just the faceted red M, centered in 512x512.
+       Vertices (scaled from master 1024 -> 512 with 30px padding):
+         A=(34,30)   C=(478,30)   B=(256,180)
+         F=(34,420)  D=(478,420)  E=(256,500)
+       Inner split points:
+         P1=(146,116) on A-B    P5=(366,116) on B-C
+         P2=(146,466) on F-E    P6=(366,466) on E-D
+         P3=(146,256) interior  P7=(366,256) interior
+         P4=(256,256) on B-E
+         L=(34,256)             R=(478,256)
+  -->
+  <!-- LEFT HALF -->
+  <path d="M 34 30  L 146 116 L 146 256 L 34 256 Z" fill="#C42028"/>
+  <path d="M 34 256 L 146 256 L 146 466 L 34 420 Z" fill="#A11A21"/>
+  <path d="M 146 116 L 256 180 L 256 256 L 146 256 Z" fill="#8C151C"/>
+  <path d="M 146 256 L 256 256 L 256 500 L 146 466 Z" fill="#6A121A"/>
+
+  <!-- RIGHT HALF -->
+  <path d="M 478 30  L 366 116 L 366 256 L 478 256 Z" fill="#C42028"/>
+  <path d="M 478 256 L 366 256 L 366 466 L 478 420 Z" fill="#A11A21"/>
+  <path d="M 366 116 L 256 180 L 256 256 L 366 256 Z" fill="#8C151C"/>
+  <path d="M 366 256 L 256 256 L 256 500 L 366 466 Z" fill="#6A121A"/>
+
+  <!-- Peak highlights -->
+  <path d="M 34 30 L 34 92 L 78 70 Z" fill="#E63946"/>
+  <path d="M 478 30 L 434 70 L 478 92 Z" fill="#E63946"/>
+</svg>

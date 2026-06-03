@@ -1,0 +1,73 @@
+name: Bug report
+description: Something compiles wrong, crashes, or produces unexpected output.
+title: "[bug] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. The more concrete the repro, the faster a fix.
+
+  - type: input
+    id: version
+    attributes:
+      label: Modra version
+      description: Output of `modra --version`, or commit SHA if installed from source.
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: node
+    attributes:
+      label: Node version
+      placeholder: "20.10.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Linux
+        - macOS
+        - Windows
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal Modra source that reproduces the bug
+      description: Trim it down to the smallest snippet that still misbehaves.
+      render: modra
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected to happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What actually happened
+      description: Paste the compiler output / generated code / runtime error here.
+      render: shell
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-flight checks
+      options:
+        - label: I searched the existing issues and didn't find a duplicate.
+          required: true
+        - label: I can reproduce this on the latest `main`.
+          required: false

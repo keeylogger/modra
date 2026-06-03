@@ -1,0 +1,64 @@
+name: Deploy GitHub Pages
+
+# Rebuilds the docs bundle and publishes the static site whenever main moves.
+# After enabling Pages once (Settings -> Pages -> Source: GitHub Actions),
+# every push to main republishes the site at the Pages URL.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Bundle browser-side compiler
+        run: npm run docs
+
+      - name: Verify docs
+        run: npm run docs:verify
+
+      - name: Stage Pages site
+        run: |
+          mkdir _site
+          cp -r README.html index.html docs assets favicon.ico _site/
+          # Optional 404 fallback for nicer hash-based routing.
+          cp _site/README.html _site/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

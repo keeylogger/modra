@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Modra">
+  <title>Modra</title>
+  <desc>Modra brand logo: two faceted green hexagonal panels flanking an origami-style red M.</desc>
+
+  <!-- Off-white card background (rounded) -->
+  <rect width="1024" height="1024" rx="96" ry="96" fill="#F5F6F8"/>
+
+  <!-- ============ LEFT GREEN PANEL (4 facets, light from upper-LEFT) ============ -->
+  <path d="M 180 200 L 60 320 L 60 460 L 180 460 Z" fill="#45B85C"/>
+  <path d="M 180 200 L 180 460 L 300 460 L 300 320 Z" fill="#2E9D43"/>
+  <path d="M 180 460 L 60 460 L 60 600 L 180 720 Z" fill="#155E2B"/>
+  <path d="M 180 460 L 180 720 L 300 600 L 300 460 Z" fill="#0F4A22"/>
+
+  <!-- ============ RIGHT GREEN PANEL (mirrored, light from upper-RIGHT) ============ -->
+  <path d="M 844 200 L 844 460 L 964 460 L 964 320 Z" fill="#45B85C"/>
+  <path d="M 844 200 L 724 320 L 724 460 L 844 460 Z" fill="#2E9D43"/>
+  <path d="M 844 460 L 844 720 L 964 600 L 964 460 Z" fill="#155E2B"/>
+  <path d="M 844 460 L 724 460 L 724 600 L 844 720 Z" fill="#0F4A22"/>
+
+  <!-- ============ FACETED RED M ============
+       Outline (clockwise):
+         A=(342,200)  top-left peak
+         B=(512,380)  top-middle valley
+         C=(682,200)  top-right peak
+         D=(682,720)  bottom-right outer corner
+         E=(512,820)  bottom-middle apex
+         F=(342,720)  bottom-left outer corner
+       Inner split points (vertical bands at x=440 and x=584,
+       collinear with the A-B / B-C / E-F / D-E edges so no kinks):
+         P1=(440,304) on A-B          P5=(584,304) on C-B
+         P2=(440,778) on F-E          P6=(584,778) on D-E
+         Mid-height split at y=460:
+         P3=(440,460) inside left     P7=(584,460) inside right
+         P4=(512,460) on B-E
+         L=(342,460) on F-A           R=(682,460) on D-C
+  -->
+
+  <!-- LEFT HALF: 4 trapezoidal facets -->
+  <!-- Upper-outer (lightest red): A, P1, P3, L -->
+  <path d="M 342 200 L 440 304 L 440 460 L 342 460 Z" fill="#C42028"/>
+  <!-- Lower-outer (light-medium): L, P3, P2, F -->
+  <path d="M 342 460 L 440 460 L 440 778 L 342 720 Z" fill="#A11A21"/>
+  <!-- Upper-inner (medium dark): P1, B, P4, P3 -->
+  <path d="M 440 304 L 512 380 L 512 460 L 440 460 Z" fill="#8C151C"/>
+  <!-- Lower-inner (darkest): P3, P4, E, P2 -->
+  <path d="M 440 460 L 512 460 L 512 820 L 440 778 Z" fill="#6A121A"/>
+
+  <!-- RIGHT HALF: mirror -->
+  <path d="M 682 200 L 584 304 L 584 460 L 682 460 Z" fill="#C42028"/>
+  <path d="M 682 460 L 584 460 L 584 778 L 682 720 Z" fill="#A11A21"/>
+  <path d="M 584 304 L 512 380 L 512 460 L 584 460 Z" fill="#8C151C"/>
+  <path d="M 584 460 L 512 460 L 512 820 L 584 778 Z" fill="#6A121A"/>
+
+  <!-- Peak highlight slivers (brightest red) on the upper outer faces -->
+  <path d="M 342 200 L 342 296 L 396 268 Z" fill="#E63946"/>
+  <path d="M 682 200 L 628 268 L 682 296 Z" fill="#E63946"/>
+</svg>

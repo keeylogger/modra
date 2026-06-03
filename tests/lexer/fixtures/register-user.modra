@@ -1,0 +1,50 @@
+@@strict
+@@target: Server
+
+using Backend.Database as DB
+using Backend.Auth
+
+Database: Postgres -> (
+  Table: Users -> (
+    String: ID <- UUID() @Primary
+    String: Name
+    String: Email @Unique
+    String: PasswordHash
+  )
+)
+
+@@experimental(nativeBridges)
+Endpoint: RegisterUser(name: String, email: String, password: String) -> (
+  @@reactive: off
+
+  Native<Python>(in: password; out: hashed) {
+    import bcrypt
+    hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+  }
+
+  Record: NewUser <- DB.Users.Insert(Name: name, Email: email, PasswordHash: hashed)
+  Log: __module__ + ": new user " + NewUser.ID
+
+  if NewUser.IsSuccessful -> (
+    Return: AuthToken(NewUser.ID)
+  ) else -> (
+    Throw: Error("Registration Failed")
+  )
+)
+
+Action: SubmitRegistration -> (
+  Response: res <- Server.RegisterUser(name, email, password)
+  if res.Success -> (
+    Show: Toast ("Welcome!")
+    Navigate: "/dashboard"
+  )
+)
+
+Component: RegistrationForm -> (
+  form (
+    InputField::Name      placeholder: "Enter name"
+    InputField::Email     placeholder: "Enter email"
+    InputField::Password  placeholder: "Password"
+    Submit                Click -> SubmitRegistration label: "Register"
+  )
+)

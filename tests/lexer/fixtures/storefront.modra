@@ -1,0 +1,61 @@
+using Web.UI
+using Web.Animation
+using Backend.Database as DB
+
+Style: BaseTheme (
+  String: Font <- "SF Pro Display, Inter, sans-serif"
+  Color: Primary <- #1D1D1F
+)
+
+Style: AppleGlass from BaseTheme (
+  Color: Background <- rgba(255, 255, 255, 0.8)
+  Number: Intensity <- 20
+  Color: Border <- #E5E5E7
+  Number: Radius <- 18
+  Number: Speed <- 0.3
+)
+
+Number: CartCount <- 0
+Array<Object>: UserList <- []
+
+Action: Main -> (
+  Window: StoreFront -> (
+    Title: "Modra Refurbished"
+    style: BaseTheme
+
+    Header: Nav -> (
+      style: AppleGlass
+      layout: Flex.Between
+      Text: Logo ("Refurbished")
+      Text: Status <- "Cart: {CartCount}"
+    )
+
+    Grid: ProductDisplay -> Columns: 3 (
+      CreateProductCard(Name: "iPhone 13", Price: 499, Image: "iphone.jpg")
+
+      Style: PromoCard from AppleGlass (
+        Color: Border <- #FF3B30
+      )
+
+      CreateProductCard(Name: "iPad Pro", Price: 650, Image: "ipad.jpg") (
+        style: PromoCard
+      )
+    )
+  )
+)
+
+Component: CreateProductCard(Name: String, Price: Number, Image: String) -> (
+  Container: Card -> (
+    style: AppleGlass
+    Image: Hero (src: Image)
+    Text: Title (Name)
+    Text: PriceTag ("${Price}")
+    Button: BuyBtn (label: "Add to Bag")
+
+    On BuyBtn.click -> (
+      CartCount <- CartCount + 1
+      Animate: BuyBtn (Scale: 0.95, Duration: 0.1)
+      Show: Toast ("{Name} added to bag!")
+    )
+  )
+)

@@ -1,0 +1,54 @@
+{
+  "name": "modra",
+  "version": "1.0.0",
+  "description": "The declarative full-stack language that reads like a flowchart.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "modra": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lex": "tsx src/cli.ts lex",
+    "parse": "tsx src/cli.ts parse",
+    "docs": "node ./scripts/bundle-docs.mjs",
+    "docs:verify": "node ./scripts/verify-docs.mjs",
+    "assets": "node ./scripts/build-assets.mjs",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\""
+  },
+  "dependencies": {
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "esbuild": "^0.28.0",
+    "png-to-ico": "^3.0.1",
+    "prettier": "^3.4.2",
+    "sharp": "^0.34.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "modra",
+    "language",
+    "compiler",
+    "transpiler",
+    "full-stack",
+    "declarative",
+    "reactive"
+  ]
+}

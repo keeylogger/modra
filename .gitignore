@@ -1,0 +1,59 @@
+# ───────── Dependencies ─────────
+node_modules/
+.pnpm-store/
+.yarn/cache/
+
+# ───────── Build output ─────────
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# ───────── Test / coverage ─────────
+coverage/
+.nyc_output/
+
+# ───────── Logs ─────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ───────── Editor / IDE ─────────
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.history/
+
+# ───────── OS metadata ─────────
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# ───────── Environment ─────────
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+*.pem
+
+# ───────── Caches ─────────
+.cache/
+.parcel-cache/
+.turbo/
+.next/
+.eslintcache
+.stylelintcache
+
+# ───────── Local-only ─────────
+/tmp/
+/scratch/
+*.local

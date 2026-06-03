@@ -1,0 +1,1784 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Modra - the declarative full-stack language</title>
+  <meta name="description" content="Modra is a single declarative language that compiles to a complete full-stack web app: React frontend, Node backend, Postgres schema, and the bridge between them." />
+  <meta name="theme-color" content="#0a1410" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Modra - the declarative full-stack language" />
+  <meta property="og:description" content="One file. UI, state, server, and database. Compiles to React + Node + Postgres." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="./docs/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="./docs/og-image.png" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="./docs/styles.css" />
+
+  <!-- Brand favicons -->
+  <link rel="icon" type="image/svg+xml" href="./docs/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32"  href="./docs/favicon-512.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./docs/favicon-512.png" />
+  <link rel="apple-touch-icon" href="./docs/apple-touch-icon.png" />
+  <link rel="shortcut icon" href="./favicon.ico" />
+</head>
+
+<body>
+  <div class="sidebar-backdrop" id="backdrop"></div>
+
+  <div class="app">
+    <!-- ─── Sidebar ─────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Modra">
+              <rect width="64" height="64" rx="14" ry="14" fill="#0F4A22"/>
+              <path d="M 11 14 L 6 19 L 6 32 L 11 32 Z"  fill="#45B85C"/>
+              <path d="M 11 14 L 11 32 L 16 32 L 16 19 Z" fill="#2E9D43"/>
+              <path d="M 11 32 L 6 32 L 6 45 L 11 50 Z"   fill="#155E2B"/>
+              <path d="M 11 32 L 11 50 L 16 45 L 16 32 Z" fill="#0F4A22"/>
+              <path d="M 53 14 L 53 32 L 58 32 L 58 19 Z" fill="#45B85C"/>
+              <path d="M 53 14 L 48 19 L 48 32 L 53 32 Z" fill="#2E9D43"/>
+              <path d="M 53 32 L 53 50 L 58 45 L 58 32 Z" fill="#155E2B"/>
+              <path d="M 53 32 L 48 32 L 48 45 L 53 50 Z" fill="#0F4A22"/>
+              <path d="M 22 12 L 27 17 L 27 32 L 22 32 Z" fill="#C42028"/>
+              <path d="M 22 32 L 27 32 L 27 49 L 22 46 Z" fill="#A11A21"/>
+              <path d="M 27 17 L 32 22 L 32 32 L 27 32 Z" fill="#8C151C"/>
+              <path d="M 27 32 L 32 32 L 32 52 L 27 49 Z" fill="#6A121A"/>
+              <path d="M 42 12 L 37 17 L 37 32 L 42 32 Z" fill="#C42028"/>
+              <path d="M 42 32 L 37 32 L 37 49 L 42 46 Z" fill="#A11A21"/>
+              <path d="M 37 17 L 32 22 L 32 32 L 37 32 Z" fill="#8C151C"/>
+              <path d="M 37 32 L 32 32 L 32 52 L 37 49 Z" fill="#6A121A"/>
+              <path d="M 22 12 L 22 16 L 25 14 Z" fill="#E63946"/>
+              <path d="M 42 12 L 39 14 L 42 16 Z" fill="#E63946"/>
+            </svg>
+          </span>
+          <span>Modra</span>
+          <span class="brand-version">v1.0.0</span>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Documentation navigation">
+        <div class="nav-group">
+          <div class="nav-group-title">Get Started</div>
+          <a class="nav-link" href="#/">         <span class="nav-icon">●</span> Introduction</a>
+          <a class="nav-link" href="#/install">  <span class="nav-icon">●</span> Installation</a>
+          <a class="nav-link" href="#/quickstart"><span class="nav-icon">●</span> Quick start</a>
+          <a class="nav-link" href="#/playground"><span class="nav-icon">▶</span> Live playground</a>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">Language</div>
+          <a class="nav-link" href="#/syntax">    <span class="nav-icon">●</span> Syntax &amp; operators</a>
+          <a class="nav-link" href="#/types">     <span class="nav-icon">●</span> Types</a>
+          <a class="nav-link" href="#/state">     <span class="nav-icon">●</span> State &amp; reactivity</a>
+          <a class="nav-link" href="#/components"><span class="nav-icon">●</span> Components &amp; UI</a>
+          <a class="nav-link" href="#/styles">    <span class="nav-icon">●</span> Styles</a>
+          <a class="nav-link" href="#/actions">   <span class="nav-icon">●</span> Actions</a>
+          <a class="nav-link" href="#/endpoints"> <span class="nav-icon">●</span> Endpoints</a>
+          <a class="nav-link" href="#/database">  <span class="nav-icon">●</span> Database</a>
+          <a class="nav-link" href="#/control-flow"><span class="nav-icon">●</span> Control flow</a>
+          <a class="nav-link" href="#/native">    <span class="nav-icon">●</span> Native bridges</a>
+          <a class="nav-link" href="#/directives"><span class="nav-icon">●</span> Directives</a>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">Reference</div>
+          <a class="nav-link" href="#/stdlib">    <span class="nav-icon">●</span> Standard library</a>
+          <a class="nav-link" href="#/cli">       <span class="nav-icon">●</span> CLI</a>
+          <a class="nav-link" href="#/diagnostics"><span class="nav-icon">●</span> Diagnostics</a>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">Learn</div>
+          <a class="nav-link" href="#/comparison"><span class="nav-icon">●</span> vs other languages</a>
+          <a class="nav-link" href="#/examples">  <span class="nav-icon">●</span> Example apps</a>
+          <a class="nav-link" href="#/faq">       <span class="nav-icon">●</span> FAQ</a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a class="icon-btn" href="https://github.com" title="GitHub" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+        </a>
+        <button class="icon-btn" id="theme-toggle" title="Toggle theme">
+          <span id="theme-icon">☀️</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ─── Main ─────────────────────────────────────────────── -->
+    <main class="main">
+      <header class="topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="icon-btn menu-toggle" id="menu-toggle" aria-label="Open navigation">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2 4h12v2H2zM2 9h12v2H2z"/></svg>
+          </button>
+          <div class="crumbs">
+            <span class="sep">Docs</span> <span class="sep">/</span> <strong id="crumb-current">Introduction</strong>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <span class="pill primary">v1.0.0 · alpha</span>
+        </div>
+      </header>
+
+      <div class="content" id="content">
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- HOME                                                  -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/" data-title="Introduction">
+          <div class="hero">
+            <div class="eyebrow">⚡ The declarative full-stack language</div>
+            <h1 class="hero-title">One file.<br/><span class="grad">A whole web app.</span></h1>
+            <p class="hero-sub">
+              Modra unifies UI, state, server endpoints, and database schema in a single
+              declarative syntax — then compiles to a real React frontend, a real Node
+              backend, and real Postgres tables. No glue code. No API client. No drift.
+            </p>
+            <div class="hero-cta">
+              <a class="btn btn-primary" href="#/quickstart">Get started →</a>
+              <a class="btn" href="#/playground">▶ Live playground</a>
+              <a class="btn btn-ghost" href="#/comparison">vs other languages</a>
+            </div>
+          </div>
+
+          <div class="grid cols-3">
+            <div class="card">
+              <span class="icon">🧠</span>
+              <h3>One mental model</h3>
+              <p>UI, state, side-effects, server endpoints, and SQL tables share one
+                 syntax. Same operators, same scoping, same identifiers.</p>
+            </div>
+            <div class="card">
+              <span class="icon">⚡</span>
+              <h3>Reactive by default</h3>
+              <p>The <code>&lt;-</code> operator binds a value reactively. Change the
+                 source, every dependent re-renders or re-runs. No hooks ceremony.</p>
+            </div>
+            <div class="card">
+              <span class="icon">🌉</span>
+              <h3>Auto-bridged</h3>
+              <p>Call a <code>@@target: Server</code> endpoint from the client like a
+                 local function. The compiler generates the fetch glue and types.</p>
+            </div>
+            <div class="card">
+              <span class="icon">🗃️</span>
+              <h3>Database, first-class</h3>
+              <p>Declare a <code>Database</code> with typed <code>Table</code>s — get
+                 Postgres DDL, a typed query API, and migrations for free.</p>
+            </div>
+            <div class="card">
+              <span class="icon">🎨</span>
+              <h3>Plain UI attributes</h3>
+              <p>Style with <code>::Size.Medium</code>, effects with <code>&lt;:Hover</code>.
+                 No CSS-in-JS noise, no className gymnastics.</p>
+            </div>
+            <div class="card">
+              <span class="icon">🚪</span>
+              <h3>Native escape hatches</h3>
+              <p>Need something Modra can't express? Drop into
+                 <code>Native&lt;Python&gt; { … }</code> or
+                 <code>Native&lt;TypeScript&gt;</code>. Typed in, typed out.</p>
+            </div>
+          </div>
+
+          <h2>Hello, world</h2>
+          <p>A reactive counter — full component, runnable as written:</p>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Number: Count <- 0
+
+Action: Increment -> ( Count <- Count + 1 )
+Action: Reset     -> ( Count <- 0 )
+
+Component: Counter -> (
+  Text: Display <- "Count is " + Count
+
+  form (
+    Submit  label: "Increment"  Click -> Increment
+    Submit  label: "Reset"      Click -> Reset
+  )
+)</code></pre></div>
+
+          <p>That compiles to:</p>
+          <ul>
+            <li>a React component with a <code>useState</code> hook and JSX,</li>
+            <li>… nothing else, because there are no server or database bits yet.</li>
+          </ul>
+
+          <h2>Add a backend (still one file)</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">using Backend.Database as DB
+
+Database: Postgres -> (
+  Table: Visits -> (
+    String:   ID @Primary
+    DateTime: At
+    String:   UserName
+  )
+)
+
+Endpoint: Greet(name: String) -> (
+  Record: row <- DB.Visits.Insert(ID: UUID(), At: Now(), UserName: name)
+  Return: "Hello, " + name + "!"
+)
+
+Component: Hello -> (
+  form (
+    InputField::Name      placeholder: "Your name"
+    Submit                label: "Say hi"  Click -> Greet(Name)
+  )
+)</code></pre></div>
+
+          <p>The compiler produces:</p>
+          <ul>
+            <li>a <strong>React</strong> page with a controlled input and an auto-generated
+                <code>greet()</code> client that <code>POST</code>s to <code>/api/greet</code>,</li>
+            <li>a <strong>Node + Express</strong> handler that calls <code>db.visits.insert(...)</code>,</li>
+            <li>a <strong>Postgres</strong> DDL for the <code>visits</code> table,</li>
+            <li>a shared <strong>RPC type file</strong> keeping client and server in sync.</li>
+          </ul>
+
+          <div class="callout success">
+            <span class="ico">✓</span>
+            <p>Try the registration example in the <a href="#/playground">live playground</a> —
+              edit on the left, see emitted code on the right, in real time.</p>
+          </div>
+
+          <h2>Why Modra exists</h2>
+          <p>Modern web stacks scatter <em>one feature</em> across five files: a React
+             component, a hook, an API route handler, a database migration, and a typed
+             client wrapper. They drift. They duplicate. Modra collapses them.</p>
+
+          <div class="table-wrap"><table>
+            <thead><tr><th>Concern</th><th>Typical stack</th><th>Modra</th></tr></thead>
+            <tbody>
+              <tr><td>UI markup</td><td>JSX / Svelte / Vue template</td><td><code>form (...)</code> tree</td></tr>
+              <tr><td>UI state</td><td><code>useState</code>, signals, stores</td><td><code>Number: X &lt;- 0</code></td></tr>
+              <tr><td>Server endpoint</td><td>Express route + Zod schema</td><td><code>Endpoint: X -&gt; ( ... )</code></td></tr>
+              <tr><td>Client call</td><td>Hand-written fetch + types</td><td>Just call the endpoint</td></tr>
+              <tr><td>Database schema</td><td>SQL file or ORM model</td><td><code>Table: T -&gt; ( ... )</code></td></tr>
+              <tr><td>Validation</td><td>Zod / Yup / Joi</td><td>Types are the schema</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- INSTALL                                               -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/install" data-title="Installation">
+          <h1>Installation</h1>
+          <p class="lead">Modra ships as an npm package. You need Node 20+ and npm 10+.</p>
+
+          <h2>npm</h2>
+          <div class="code-wrap"><span class="code-label">bash</span><pre><code data-lang="bash">npm install -g modra
+# or, per project:
+npm install --save-dev modra</code></pre></div>
+
+          <h2>Verify</h2>
+          <div class="code-wrap"><span class="code-label">bash</span><pre><code data-lang="bash">modra --version
+# modra 1.0.0
+
+modra --help
+# Usage: modra &lt;command&gt; [options]
+# Commands: init, build, dev, check, parse, lex</code></pre></div>
+
+          <h2>Editor setup</h2>
+          <ul>
+            <li><strong>VS Code:</strong> a syntax-highlighting grammar ships with the
+                package. Open a <code>.modra</code> file and pick "Modra" from the language picker.</li>
+            <li><strong>Diagnostics:</strong> Modra's CLI prints Rust-style errors with
+                source carets. Pipe through your normal terminal.</li>
+            <li><strong>Format on save:</strong> coming in 1.1 (<code>modra fmt</code>).</li>
+          </ul>
+
+          <h2>From source</h2>
+          <div class="code-wrap"><span class="code-label">bash</span><pre><code data-lang="bash">git clone https://github.com/your-org/modra.git
+cd modra
+npm install
+npm test          # 294 tests
+npm run build     # build the compiler
+npm link          # expose the `modra` binary
+modra init my-app</code></pre></div>
+
+          <div class="callout info">
+            <span class="ico">ℹ</span>
+            <p>Modra is currently <strong>alpha</strong>. The CLI and emitted code are
+              stable enough for prototypes; pin a version and expect a few rough edges.</p>
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- QUICKSTART                                            -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/quickstart" data-title="Quick start">
+          <h1>Quick start</h1>
+          <p class="lead">Go from <code>npm install</code> to a running full-stack app in under five minutes.</p>
+
+          <h2>1 · Scaffold a project</h2>
+          <div class="code-wrap"><span class="code-label">bash</span><pre><code data-lang="bash">modra init taskboard
+cd taskboard</code></pre></div>
+
+          <p>You'll get a folder with:</p>
+          <div class="code-wrap"><span class="code-label">tree</span><pre><code data-lang="bash">taskboard/
+├── taskboard.modra   # your source
+├── package.json
+└── README.md</code></pre></div>
+
+          <p>The starter <code>taskboard.modra</code> looks like this:</p>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Number: Count <- 0
+
+Action: Increment -> ( Count <- Count + 1 )
+Action: Reset     -> ( Count <- 0 )
+
+Component: TaskBoard -> (
+  Text: Status <- "Tap count: " + Count
+
+  form (
+    Submit  label: "Tap"    Click -> Increment
+    Submit  label: "Reset"  Click -> Reset
+  )
+)</code></pre></div>
+
+          <h2>2 · Build</h2>
+          <div class="code-wrap"><span class="code-label">bash</span><pre><code data-lang="bash">modra build taskboard.modra -o ./dist</code></pre></div>
+
+          <p>Modra emits a complete project tree:</p>
+          <div class="code-wrap"><span class="code-label">tree</span><pre><code data-lang="bash">dist/
+├── package.json        # Vite + React + Express setup
+├── vite.config.ts
+├── tsconfig.json
+├── .env.example
+├── README.md
+├── src/                # React frontend
+│   ├── main.tsx
+│   ├── App.tsx
+│   ├── components/TaskBoard.tsx
+│   └── runtime/        # client stdlib (Hash, Toast, Navigate, …)
+├── server/             # Node + Express backend
+│   ├── index.ts
+│   ├── db.ts
+│   ├── routes/
+│   └── runtime/        # server stdlib (AuthToken, Hash, …)
+├── shared/             # auto-generated bridge
+│   ├── rpc.ts
+│   └── types.ts
+└── schema.sql          # Postgres DDL</code></pre></div>
+
+          <h2>3 · Run</h2>
+          <div class="code-wrap"><span class="code-label">bash</span><pre><code data-lang="bash">cd dist
+npm install
+npm run dev   # client on :5173, server on :3000</code></pre></div>
+
+          <h2>4 · Develop with live rebuilds</h2>
+          <p>From your <code>.modra</code> source directory, run:</p>
+          <div class="code-wrap"><span class="code-label">bash</span><pre><code data-lang="bash">modra dev taskboard.modra -o ./dist</code></pre></div>
+          <p>The Modra compiler watches the source file and regenerates the project on
+             every save. Pair it with <code>npm run dev</code> inside <code>./dist</code>
+             for end-to-end hot reload.</p>
+
+          <h2>5 · Add a server endpoint</h2>
+          <p>Open <code>taskboard.modra</code>, add a server endpoint, and call it from a
+             button. The compiler will wire up the API.</p>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Number: Count <- 0
+
+Action: Increment -> ( Count <- Count + 1 )
+
+Endpoint: Save(count: Number) -> (
+  Log: "Saving count " + count
+  Return: true
+)
+
+Component: TaskBoard -> (
+  Text: Status <- "Count: " + Count
+
+  form (
+    Submit  label: "+"     Click -> Increment
+    Submit  label: "Save"  Click -> Save(Count)
+  )
+)</code></pre></div>
+
+          <div class="callout success">
+            <span class="ico">✓</span>
+            <p>Save the file. <code>modra dev</code> rebuilds, the React UI hot-reloads,
+              and clicking <em>Save</em> hits <code>/api/save</code> on your Node backend.</p>
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- SYNTAX                                                -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/syntax" data-title="Syntax & operators">
+          <h1>Syntax &amp; operators</h1>
+          <p class="lead">Modra's grammar is small but expressive. Most of the language
+             fits on a single reference card.</p>
+
+          <h2>Identifiers, case &amp; meaning</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Casing</th><th>Meaning</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td><code>PascalCase</code></td><td>Declarations, types, components</td><td><code>Component</code>, <code>String</code>, <code>UserCard</code></td></tr>
+              <tr><td><code>camelCase</code></td><td>Local variables, parameters, fields</td><td><code>userName</code>, <code>price</code></td></tr>
+              <tr><td><code>lowercase</code></td><td>HTML-ish primitive tags, modifiers</td><td><code>form</code>, <code>div</code>, <code>using</code></td></tr>
+              <tr><td><code>UPPER_SNAKE</code></td><td>Constants by convention (not enforced)</td><td><code>MAX_RETRIES</code></td></tr>
+            </tbody>
+          </table></div>
+
+          <h2>The four assignment operators</h2>
+          <p>This is the heart of Modra. Read them aloud — the symbols match the dataflow direction.</p>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Op</th><th>Reads as</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>:</code></td><td>"is"</td><td>Static assignment / declaration label</td></tr>
+              <tr><td><code>&lt;-</code></td><td>"reactively becomes"</td><td>Reactive binding (re-evaluates when dependencies change)</td></tr>
+              <tr><td><code>-&gt;</code></td><td>"then"</td><td>Event handler / endpoint body / arrow</td></tr>
+              <tr><td><code>&lt;-&gt;</code></td><td>"is synced with"</td><td>Two-way binding</td></tr>
+              <tr><td><code>&lt;:</code></td><td>"apply effect"</td><td>Attach an effect / decorator to a value</td></tr>
+            </tbody>
+          </table></div>
+
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">// Static literal — value never changes after init.
+String: AppName <- "Modra"
+
+// Reactive — re-runs whenever Count changes.
+Number: Count <- 0
+String: Label <- "Count is " + Count
+
+Action: Tap -> ( Count <- Count + 1 )
+
+Component: Demo -> (
+  // Event handler — Click fires the named Action.
+  Submit  label: "Tap"  Click -> Tap
+
+  // Two-way binding — Element :: state.
+  InputField::Email
+
+  // Apply effect — declarative side-effects on a value.
+  Avatar: Pic
+  Pic <: HoverEffect(pop)
+)</code></pre></div>
+
+          <h2>The selector operator <code>::</code></h2>
+          <p>Use <code>::</code> to bind an element to a target name (two-way), or
+             to pick a variant on a value.</p>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Component: Demo -> (
+  form (
+    // Two-way bind: InputField &lt;-&gt; Email, plus a placeholder attr
+    InputField::Email     placeholder: "you@domain.com"
+    InputField::Password  placeholder: "•••••••"
+  )
+
+  // Variant selector — applies a kind/size to an element.
+  Avatar: Hero (size: Large)
+  Button: Buy  (color: Primary, label: "Buy now")
+)</code></pre></div>
+
+          <h2>String interpolation &amp; concatenation</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">String: name <- "world"
+
+Component: Demo -> (
+  // Concatenation with + works for all primitives.
+  String: Greeting <- "Hello, " + name + "!"
+  Text: G (Greeting)
+
+  // @{ … } switches the scanner into an expression injection.
+  Text: Header @{ "Welcome " + name }
+)</code></pre></div>
+
+          <h2>Collections</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Array<Object>:        Tags    <- []
+Map<String, Number>:  Scores  <- { alice: 92, bob: 87 }
+
+Action: ManageTags -> (
+  // Append / remove with simple operators.
+  Tags <- Tags + ["new"]
+  Tags <- Tags - ["review"]
+)</code></pre></div>
+
+          <h2>Operator precedence (high → low)</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Level</th><th>Operators</th><th>Associativity</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><code>()</code> <code>[]</code> <code>.</code> <code>::</code></td><td>left</td></tr>
+              <tr><td>2</td><td>unary <code>!</code> <code>-</code> <code>@</code></td><td>right</td></tr>
+              <tr><td>3</td><td><code>*</code> <code>/</code> <code>%</code></td><td>left</td></tr>
+              <tr><td>4</td><td><code>+</code> <code>-</code></td><td>left</td></tr>
+              <tr><td>5</td><td><code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code></td><td>left</td></tr>
+              <tr><td>6</td><td><code>==</code> <code>!=</code></td><td>left</td></tr>
+              <tr><td>7</td><td><code>and</code></td><td>left</td></tr>
+              <tr><td>8</td><td><code>or</code></td><td>left</td></tr>
+              <tr><td>9</td><td><code>&lt;:</code></td><td>left</td></tr>
+              <tr><td>10</td><td><code>&lt;-</code> <code>-&gt;</code> <code>&lt;-&gt;</code></td><td>right</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2>Comments</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">// line comment
+/* block comment that
+   spans multiple lines */</code></pre></div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- TYPES                                                 -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/types" data-title="Types">
+          <h1>Types</h1>
+          <p class="lead">Modra is statically typed, but the syntax barely shows it.
+            Types are <em>labels</em>, not annotations.</p>
+
+          <h2>Primitives</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Type</th><th>Description</th><th>Example literal</th></tr></thead>
+            <tbody>
+              <tr><td><code>Number</code></td><td>64-bit float (integers and decimals)</td><td><code>42</code>, <code>3.14</code></td></tr>
+              <tr><td><code>String</code></td><td>UTF-8 text</td><td><code>"hello"</code></td></tr>
+              <tr><td><code>Bool</code></td><td>True / False</td><td><code>True</code></td></tr>
+              <tr><td><code>Color</code></td><td>Hex or named color</td><td><code>#7c5cff</code></td></tr>
+              <tr><td><code>DateTime</code></td><td>ISO-8601 timestamp</td><td><code>Now()</code></td></tr>
+              <tr><td><code>UUID</code></td><td>v4 unique identifier</td><td><code>UUID()</code></td></tr>
+              <tr><td><code>None</code></td><td>Absence of a value</td><td><code>None</code></td></tr>
+              <tr><td><code>Any</code></td><td>Escape hatch</td><td>—</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2>Declaring a typed value</h2>
+          <p>The type label sits on the left, the name on the right of <code>:</code>:</p>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Number: Count   <- 0
+String: Title   <- "Hello"
+Bool:   Visible <- true
+
+Action: Bump -> (
+  // Reassignment uses <-; the type label is omitted.
+  Count <- Count + 1
+)</code></pre></div>
+
+          <h2>Generics</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Array<Number>:        Scores  <- [10, 20, 30]
+Map<String, Bool>:    Flags   <- { darkMode: true }
+Array<Object>:        Users   <- []</code></pre></div>
+
+          <h2>Type aliases</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Type: EmailAddress: String @Format(email)
+Type: ProductId:    String @Format(uuid)
+Type: Cart:         Array<Object></code></pre></div>
+
+          <h2>Function types</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Action: Notify(message: String, level: String) -> (
+  Show: Toast(message)
+)
+
+Endpoint: GetUser(id: String) -> (
+  Record: u <- DB.Users.Find(id)
+  Return: u
+)</code></pre></div>
+
+          <h2>Reactive types</h2>
+          <p>A reactive value still has a static type — Modra just adds an implicit
+             "subscribable" wrapper at compile time.</p>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Number: A <- 1
+Number: B <- A * 2   // B is reactive: when A changes, B re-evaluates.</code></pre></div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- STATE                                                 -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/state" data-title="State & reactivity">
+          <h1>State &amp; reactivity</h1>
+          <p class="lead">In Modra, <em>data flows downhill</em>. Declare a state value
+            with <code>&lt;-</code>, and every expression that reads it stays in sync.</p>
+
+          <h2>Local state</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">String: Name <- "Ada"
+Number: Age  <- 36
+String: Bio  <- Name + " is " + Age + " years old."
+
+Component: Profile -> (
+  form (
+    InputField::Name
+    InputField::Age
+    Text: BioLine (Bio)
+  )
+)</code></pre></div>
+
+          <p>Watch what happens:</p>
+          <ul>
+            <li><code>InputField::Name</code> sets up an automatic two-way binding to <code>Name</code>.</li>
+            <li><code>Bio</code> is reactive — it reads <code>Name</code> and <code>Age</code>,
+                so it re-renders whenever either changes.</li>
+            <li>No <code>useState</code>, no <code>useEffect</code>, no subscribe call.</li>
+          </ul>
+
+          <h2>Derived values</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Number: Quantity  <- 1
+Number: UnitPrice <- 9.99
+Number: Subtotal  <- Quantity * UnitPrice
+Number: Tax       <- Subtotal * 0.08
+Number: Total     <- Subtotal + Tax</code></pre></div>
+
+          <p>This is a one-way dependency graph; the compiler topologically sorts updates.</p>
+
+          <h2>Sync (two-way)</h2>
+          <p>For symbolic mirrors, <code>&lt;-&gt;</code> keeps two state values aligned both ways:</p>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">String: Query <- ""
+String: Mirror <- ""
+
+Component: Search -> (
+  Query <-> Mirror
+
+  form (
+    InputField::Query  placeholder: "Search…"
+    Text: T (Mirror)
+  )
+)</code></pre></div>
+
+          <h2>Implicit state from bindings</h2>
+          <p>You can skip the declaration entirely. The compiler creates the state for you:</p>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Component: Login -> (
+  form (
+    InputField::Email      // auto-declares String: Email <- ""
+    InputField::Password   // auto-declares String: Password <- ""
+    Submit  label: "Sign in"  Click -> Authenticate(Email, Password)
+  )
+)</code></pre></div>
+
+          <h2>Reactivity rules</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>You write</th><th>Compiler emits</th></tr></thead>
+            <tbody>
+              <tr><td><code>Number: X &lt;- 0</code></td><td><code>const [X, setX] = useState(0)</code></td></tr>
+              <tr><td><code>Number: Y &lt;- X * 2</code></td><td><code>const Y = useMemo(() =&gt; X * 2, [X])</code></td></tr>
+              <tr><td><code>X &lt;- X + 1</code></td><td><code>setX(X + 1)</code></td></tr>
+              <tr><td><code>InputField::X</code></td><td>controlled input with onChange</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- COMPONENTS                                            -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/components" data-title="Components & UI">
+          <h1>Components &amp; UI</h1>
+          <p class="lead">Modra UI is a tree of elements with attributes — the same
+            elements you know from HTML, plus a curated standard set.</p>
+
+          <h2>Declaring a component</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Component: Hero -> (
+  Text: Title    ("Welcome to Modra")
+  Text: Tagline  ("The declarative full-stack language")
+
+  Submit  label: "Start"  Click -> Navigate("/quickstart")
+)</code></pre></div>
+
+          <h2>Built-in elements</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Category</th><th>Elements</th></tr></thead>
+            <tbody>
+              <tr><td>Text</td><td><code>h1</code> … <code>h6</code>, <code>p</code>, <code>span</code>, <code>b</code>, <code>i</code></td></tr>
+              <tr><td>Layout</td><td><code>div</code>, <code>section</code>, <code>nav</code>, <code>header</code>, <code>footer</code>, <code>form</code></td></tr>
+              <tr><td>Lists</td><td><code>ul</code>, <code>ol</code>, <code>li</code></td></tr>
+              <tr><td>Form</td><td><code>InputField</code>, <code>TextArea</code>, <code>Submit</code>, <code>Button</code>, <code>Select</code>, <code>Checkbox</code>, <code>Radio</code></td></tr>
+              <tr><td>Media</td><td><code>img</code>, <code>video</code>, <code>audio</code>, <code>Icon</code>, <code>Avatar</code></td></tr>
+              <tr><td>Display</td><td><code>Card</code>, <code>Badge</code>, <code>Pill</code>, <code>Toast</code>, <code>Modal</code></td></tr>
+            </tbody>
+          </table></div>
+
+          <h2>Props &amp; children</h2>
+          <p>A component declaration with parameters looks like a typed function:</p>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Action: Checkout(name: String) -> ( Show: Toast("Buying " + name) )
+
+Component: ProductCard(Name: String, Price: Number) -> (
+  Text: Title (Name)
+  Text: Tag   ("$" + Price)
+  Submit  label: "Buy"  Click -> Checkout(Name)
+)
+
+Component: Storefront -> (
+  Array<Object>: Items <- []
+
+  forEach p in Items -> (
+    ProductCard(Name: p.Name, Price: p.Price)
+  )
+)</code></pre></div>
+
+          <h2>Conditional rendering</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Bool: IsAuthed <- CurrentUser() != None
+
+Component: Header -> (
+  if IsAuthed -> (
+    Avatar: Pic (src: CurrentUser().Avatar)
+  ) else -> (
+    Submit  label: "Sign in"  Click -> Navigate("/login")
+  )
+)</code></pre></div>
+
+          <h2>Lists</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Array<Object>: Items <- ["Walk", "Code", "Sleep"]
+
+Component: Todos -> (
+  forEach item in Items -> (
+    Text: Row (item)
+  )
+)</code></pre></div>
+
+          <h2>Element kind via <code>::</code></h2>
+          <p>Many form elements accept a kind selector to set their input semantics:</p>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Component: SignUp -> (
+  form (
+    InputField::Name      placeholder: "Full name"
+    InputField::Email     placeholder: "you@domain.com"
+    InputField::Password  placeholder: "••••••"
+    InputField::Age       placeholder: "Age"  min: 0  max: 120
+    InputField::DOB       placeholder: "Date of birth"
+    InputField::Query     placeholder: "Search…"
+  )
+)</code></pre></div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- STYLES                                                -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/styles" data-title="Styles">
+          <h1>Styles</h1>
+          <p class="lead">Styles attach to elements like attributes. No CSS files, no
+             template literals, no className strings.</p>
+
+          <h2>Style attributes</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Component: Hero -> (
+  Container: Box (
+    bg: Color.Dark,
+    padding: 24,
+    radius: 12,
+    shadow: Shadow.Soft,
+  )
+
+  Text: Title (
+    "Hello",
+    color: Color.Primary,
+    size:  Size.XLarge,
+  )
+)</code></pre></div>
+
+          <h2>Reusable <code>Style</code> blocks</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Style: Card (
+  Color:  Background <- Color.Surface
+  Number: Padding    <- 20
+  Number: Radius     <- 10
+  String: Shadow     <- "soft"
+)
+
+Style: AppleGlass from Card (
+  Color:  Border    <- #E5E5E7
+  Number: Intensity <- 20
+)
+
+Component: Article -> (
+  Container: Hero (style: AppleGlass)
+)</code></pre></div>
+
+          <h2>Apply effects with <code>&lt;:</code></h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Component: SocialLinks -> (
+  Avatar: GitHub (src: "github.png")
+  GitHub <: HoverEffect(pop)
+)</code></pre></div>
+
+          <h2>Design-token Style blocks</h2>
+          <p>Modra ships a small design-token namespace; you can define your own theme
+             with a <code>Style</code> block:</p>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Style: Theme (
+  Color:  Primary  <- #7c5cff
+  Color:  Surface  <- #11141b
+  Color:  Text     <- #e8ecf3
+  Number: RadiusSm <- 4
+  Number: RadiusMd <- 10
+  Number: RadiusLg <- 20
+  Number: SizeSm   <- 12
+  Number: SizeMd   <- 14
+  Number: SizeLg   <- 18
+)</code></pre></div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- ACTIONS                                               -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/actions" data-title="Actions">
+          <h1>Actions</h1>
+          <p class="lead">Actions are named, reusable units of behaviour. Think of them
+             as functions with first-class reactivity awareness.</p>
+
+          <h2>Declaring an action</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Number: Count <- 0
+
+Action: Increment(by: Number) -> (
+  Count <- Count + by
+)
+
+Action: Greet(name: String) -> (
+  Return: "Hello, " + name + "!"
+)</code></pre></div>
+
+          <h2>Calling actions</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Action: Reset -> ( Count <- 0 )
+
+Component: Counter -> (
+  Text: Display <- "Count: " + Count
+
+  form (
+    Submit  label: "+1"     Click -> Increment(1)
+    Submit  label: "+10"    Click -> Increment(10)
+    Submit  label: "Reset"  Click -> Reset
+  )
+)</code></pre></div>
+
+          <h2>Actions vs endpoints</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th></th><th>Action</th><th>Endpoint</th></tr></thead>
+            <tbody>
+              <tr><td>Runs on</td><td>Client (default) or server</td><td>Always server</td></tr>
+              <tr><td>Invoked via</td><td>Direct call</td><td>Direct call → auto fetch</td></tr>
+              <tr><td>Has URL</td><td>No</td><td>Yes (<code>POST /api/&lt;name&gt;</code>)</td></tr>
+              <tr><td>Has auth context</td><td>No</td><td>Yes (<code>AuthToken()</code>, <code>CurrentUser()</code>)</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2>Pre/post hooks (1.1)</h2>
+          <p>The <code>Before:</code> / <code>After:</code> hook syntax is reserved.
+             For 1.0, wrap your logic explicitly.</p>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- ENDPOINTS                                             -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/endpoints" data-title="Endpoints">
+          <h1>Endpoints</h1>
+          <p class="lead">An <code>Endpoint</code> is a server-side function that the
+             compiler auto-exposes as a typed API and an auto-generated client.</p>
+
+          <h2>The bridge in one picture</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">String: Reply <- ""
+
+Endpoint: Greet(name: String) -> (
+  Return: "Hello, " + name
+)
+
+Action: SayHi -> (
+  // Looks like a local call. The compiler emits a fetch.
+  Reply <- Greet(Name)
+)
+
+Component: Hello -> (
+  form (
+    InputField::Name
+    Submit  label: "Say hi"  Click -> SayHi
+    Text: Out (Reply)
+  )
+)</code></pre></div>
+
+          <p>The compiler emits:</p>
+          <ul>
+            <li><strong>Server:</strong> Express handler <code>POST /api/greet</code></li>
+            <li><strong>Shared:</strong> <code>shared/types.ts</code> with <code>GreetRequest</code> / <code>GreetResponse</code></li>
+            <li><strong>Client:</strong> <code>shared/rpc.ts</code> exposing <code>greet(name): Promise&lt;string&gt;</code></li>
+            <li><strong>UI:</strong> a Button that <code>await</code>s the call and sets <code>Reply</code></li>
+          </ul>
+
+          <h2>Validation comes for free</h2>
+          <p>The endpoint's parameter types are checked at the wire boundary:</p>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Endpoint: CreateOrder(items: Array<Object>) -> (
+  if items.length == 0 -> (
+    Throw: Error("Cart is empty")
+  )
+  String: orderId <- UUID()
+  Record: row <- DB.Orders.Insert(ID: orderId, Items: items)
+  Return: orderId
+)</code></pre></div>
+
+          <h2>Authentication</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Endpoint: Me -> (
+  String: token <- AuthToken()
+  Record: u <- DB.Users.Find(token)
+  Return: u
+)</code></pre></div>
+
+          <h2>Returning errors</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Endpoint: Login(email: String, password: String) -> (
+  Record: user <- DB.Users.Find(email)
+  if user == None -> ( Throw: Error("Unknown email") )
+  if user.PasswordHash != Hash(password) -> ( Throw: Error("Bad credentials") )
+  Return: IssueToken(user.ID)
+)</code></pre></div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- DATABASE                                              -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/database" data-title="Database">
+          <h1>Database</h1>
+          <p class="lead">A <code>Database</code> block compiles to Postgres DDL and a
+             typed query API. No ORM. No migration tool. No drift.</p>
+
+          <h2>Declaring tables</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">using Backend.Database as DB
+
+Database: Postgres -> (
+  Table: Users -> (
+    String:   ID @Primary
+    String:   Email @Unique
+    String:   PasswordHash
+    String:   Role
+    DateTime: CreatedAt <- Now()
+  )
+
+  Table: Posts -> (
+    String:   ID @Primary
+    String:   Title @Indexed
+    String:   Body
+    String:   AuthorID @References(Users.ID)
+  )
+)</code></pre></div>
+
+          <p>Emits:</p>
+          <div class="code-wrap"><span class="code-label">sql</span><pre><code data-lang="sql">CREATE TABLE users (
+  id             VARCHAR  PRIMARY KEY,
+  email          VARCHAR  UNIQUE NOT NULL,
+  password_hash  VARCHAR  NOT NULL,
+  role           VARCHAR  NOT NULL,
+  created_at     TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE posts (
+  id         VARCHAR PRIMARY KEY,
+  title      VARCHAR NOT NULL,
+  body       VARCHAR NOT NULL,
+  author_id  VARCHAR NOT NULL REFERENCES users(id)
+);
+CREATE INDEX idx_posts_title ON posts(title);</code></pre></div>
+
+          <h2>Querying</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Endpoint: ReadStuff(someId: String) -> (
+  Record: user         <- DB.Users.Find(someId)
+  Array<Object>: posts <- DB.Posts.Select()
+  Array<Object>: mine  <- DB.Posts.Where(AuthorID: someId)
+  Number: total        <- DB.Orders.Sum("Total")
+  Number: count        <- DB.Users.Count()
+  Return: posts
+)</code></pre></div>
+
+          <h2>Mutating</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Endpoint: WriteStuff -> (
+  Record: u <- DB.Users.Insert(
+    ID:           UUID(),
+    Email:        "ada@example.com",
+    PasswordHash: Hash("hunter2"),
+    Role:         "admin",
+  )
+
+  DB.Users.Update(ID: u.ID, Role: "user")
+  DB.Users.Delete(u.ID)
+
+  Return: u
+)</code></pre></div>
+
+          <h2>Column decorators</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Decorator</th><th>SQL equivalent</th></tr></thead>
+            <tbody>
+              <tr><td><code>@Primary</code></td><td><code>PRIMARY KEY</code></td></tr>
+              <tr><td><code>@Unique</code></td><td><code>UNIQUE</code></td></tr>
+              <tr><td><code>@Indexed</code></td><td><code>CREATE INDEX</code></td></tr>
+              <tr><td><code>@References(T.col)</code></td><td><code>REFERENCES T(col)</code></td></tr>
+              <tr><td><code>@Nullable</code></td><td>nullable column (default is NOT NULL)</td></tr>
+              <tr><td><code>&lt;- value</code></td><td><code>DEFAULT</code></td></tr>
+            </tbody>
+          </table></div>
+
+          <div class="callout warning">
+            <span class="ico">⚠</span>
+            <p><strong>Migration story</strong>: 1.0 emits CREATE-only DDL. For incremental
+              schema changes use <code>modra build --diff</code> (1.1) or a managed tool
+              like <code>prisma migrate</code> on top of the emitted SQL.</p>
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- CONTROL FLOW                                          -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/control-flow" data-title="Control flow">
+          <h1>Control flow</h1>
+
+          <h2>if / elif / else</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Number: Count <- 0
+
+Component: Status -> (
+  if Count == 0 -> (
+    Text: T1 ("Nothing yet.")
+  ) elif Count < 10 -> (
+    Text: T2 ("A few things.")
+  ) else -> (
+    Text: T3 ("Lots of things!")
+  )
+)</code></pre></div>
+
+          <h2>forEach loops</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Array<Object>: Items <- []
+Array<Object>: Users <- []
+
+Component: Browser -> (
+  forEach item in Items -> (
+    Text: Row (item)
+  )
+
+  forEach user in Users as u -> (
+    Avatar: A (src: u.AvatarURL)
+  )
+)</code></pre></div>
+
+          <h2>while &amp; loop</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Action: Countdown -> (
+  Number: n <- 10
+  while n > 0 -> (
+    Log: "countdown " + n
+    n <- n - 1
+  )
+)
+
+Action: Forever -> (
+  loop -> (
+    Log: "tick"
+  )
+)
+
+Action: Tick5 -> (
+  repeat 5 times -> (
+    Show: Toast("Tick")
+  )
+)</code></pre></div>
+
+          <h2>match / case / otherwise</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">String: Status <- "pending"
+
+Action: Notify -> (
+  match Status (
+    case "pending"   -> ( Show: Toast("Waiting…") )
+    case "shipped"   -> ( Show: Toast("On its way") )
+    case "delivered" -> ( Show: Toast("Enjoy!") )
+    otherwise        -> ( Show: Toast("Unknown state") )
+  )
+)</code></pre></div>
+
+          <h2>Early return</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Endpoint: GetUser(id: String) -> (
+  if id == "" -> ( Throw: Error("Missing id") )
+  Record: u <- DB.Users.Find(id)
+  Return: u
+)</code></pre></div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- NATIVE                                                -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/native" data-title="Native bridges">
+          <h1>Native bridges</h1>
+          <p class="lead">When Modra can't express something — say, calling NumPy or a
+             specific TypeScript library — drop into a typed native block.</p>
+
+          <h2>Calling Python</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Endpoint: Sentiment(text: String) -> (
+  Native<Python>(in: text; out: label) {
+    from transformers import pipeline
+    clf = pipeline("sentiment-analysis")
+    label = clf(text)[0]["label"]
+  }
+  Return: label
+)</code></pre></div>
+
+          <h2>Calling TypeScript</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Action: SlugifyTitle(title: String) -> (
+  Native<TypeScript>(in: title; out: slug) {
+    slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  }
+  Return: slug
+)</code></pre></div>
+
+          <h2>How it works</h2>
+          <ul>
+            <li>Each native block declares <strong>typed inputs</strong> on the left and
+                <strong>typed outputs</strong> on the right.</li>
+            <li>The compiler emits a stub file (<code>natives/&lt;Name&gt;.py</code>,
+                <code>natives/&lt;Name&gt;.ts</code>) and a runtime helper that calls it.</li>
+            <li>You implement the body once. Modra never reads or modifies the stub.</li>
+          </ul>
+
+          <h2>Supported targets</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Language</th><th>Runtime adapter</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td><code>TypeScript</code></td><td>Inlined into the Node bundle</td><td><span class="pill success">stable</span></td></tr>
+              <tr><td><code>Python</code></td><td><code>python -m natives.&lt;Name&gt;</code></td><td><span class="pill success">stable</span></td></tr>
+              <tr><td><code>Go</code></td><td>HTTP sidecar process</td><td><span class="pill warn">experimental</span></td></tr>
+              <tr><td><code>Rust</code></td><td>WASM module</td><td><span class="pill warn">experimental</span></td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- DIRECTIVES                                            -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/directives" data-title="Directives">
+          <h1>Directives</h1>
+          <p class="lead">Directives starting with <code>@@</code> control how the compiler
+             treats a file or a specific declaration.</p>
+
+          <h2>Common directives</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Directive</th><th>Scope</th><th>Effect</th></tr></thead>
+            <tbody>
+              <tr><td><code>@@target: Client</code></td><td>file or decl</td><td>Force client emission</td></tr>
+              <tr><td><code>@@target: Server</code></td><td>file or decl</td><td>Force server emission</td></tr>
+              <tr><td><code>@@target: Shared</code></td><td>file or decl</td><td>Emit on both sides</td></tr>
+              <tr><td><code>@@unsafe</code></td><td>decl</td><td>Skip auth checks on this endpoint (use sparingly)</td></tr>
+              <tr><td><code>@@deprecated: "msg"</code></td><td>decl</td><td>Emit a warning when used</td></tr>
+              <tr><td><code>@@structure: Procedural</code></td><td>file</td><td>Lock paradigm (1.1)</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2>File-level vs declaration-level</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">@@target: Client       // file default
+
+Component: Form -> (   // → client
+  Text: T ("hi")
+)
+
+Endpoint: Save -> (    // intrinsically server
+  Return: true
+)
+
+@@target: Server
+Action: Audit -> (     // server, even though the file default is client
+  Log: "audited"
+)</code></pre></div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- STDLIB                                                -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/stdlib" data-title="Standard library">
+          <h1>Standard library</h1>
+          <p class="lead">A small, carefully chosen set of built-ins. Available on both
+            client and server unless noted.</p>
+
+          <h2>Identity &amp; time</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Function</th><th>Returns</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>UUID()</code></td><td><code>UUID</code></td><td>RFC 4122 v4 identifier</td></tr>
+              <tr><td><code>Now()</code></td><td><code>DateTime</code></td><td>Current timestamp (UTC)</td></tr>
+              <tr><td><code>DateTime.AddDays(d, n)</code></td><td><code>DateTime</code></td><td>Date arithmetic</td></tr>
+              <tr><td><code>DateTime.Format(d, fmt)</code></td><td><code>String</code></td><td>ISO/locale formatting</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2>Hashing &amp; auth</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Function</th><th>Available on</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>Hash(s)</code></td><td>Server</td><td>SHA-256 hex digest</td></tr>
+              <tr><td><code>AuthToken()</code></td><td>Server</td><td>Reads <code>Authorization</code> bearer</td></tr>
+              <tr><td><code>CurrentUser()</code></td><td>Server</td><td>Resolved from token (override per app)</td></tr>
+              <tr><td><code>IssueToken(uid)</code></td><td>Server</td><td>Mints a session token</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2>UI helpers (client only)</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Function</th><th>Effect</th></tr></thead>
+            <tbody>
+              <tr><td><code>Toast(msg, level?)</code></td><td>Slide-in notification</td></tr>
+              <tr><td><code>Navigate(path)</code></td><td>Client-side route change</td></tr>
+              <tr><td><code>Confirm(msg)</code></td><td><code>Bool</code> from a modal</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2>Math &amp; strings</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Action: Demo -> (
+  Number: m  <- MathX.Min(1, 2)
+  Number: n  <- MathX.Round(3.14, 1)
+  Number: r  <- MathX.Random()
+
+  String: s1 <- StringX.Slug("Hello World!")    // "hello-world"
+  String: s2 <- StringX.Pad("42", 4, "0")       // "0042"
+)</code></pre></div>
+
+          <h2>HTTP (server only)</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Endpoint: FetchTemp -> (
+  String: weather <- HttpGet("https://api.example.com/temp")
+  Return: weather
+)</code></pre></div>
+
+          <h2>Logging</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Endpoint: Audit(userId: String) -> (
+  Log: "user " + userId + " signed in"
+  Return: true
+)</code></pre></div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- CLI                                                   -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/cli" data-title="CLI">
+          <h1>CLI</h1>
+          <p class="lead">Everything the compiler exposes is one binary.</p>
+
+          <div class="table-wrap"><table>
+            <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+            <tbody>
+              <tr><td><code>modra init &lt;name&gt;</code></td><td>Create a new project folder with a starter <code>.modra</code> file</td></tr>
+              <tr><td><code>modra build &lt;src&gt; -o &lt;dir&gt;</code></td><td>Emit the full Vite + Express + Postgres project</td></tr>
+              <tr><td><code>modra dev &lt;src&gt; -o &lt;dir&gt;</code></td><td>Watch the source and rebuild on save</td></tr>
+              <tr><td><code>modra check &lt;src&gt;</code></td><td>Type-check and report diagnostics (no emit)</td></tr>
+              <tr><td><code>modra parse &lt;src&gt;</code></td><td>Print the AST as JSON</td></tr>
+              <tr><td><code>modra lex &lt;src&gt;</code></td><td>Print the token stream</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2>Examples</h2>
+          <div class="code-wrap"><span class="code-label">bash</span><pre><code data-lang="bash"># scaffold and build
+modra init shop && cd shop
+modra build shop.modra -o dist
+cd dist && npm install && npm run dev
+
+# watch mode
+modra dev shop.modra -o dist
+
+# quick sanity check
+modra check shop.modra
+
+# inspect tokens
+modra lex shop.modra | head -40</code></pre></div>
+
+          <h2>Flags</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Flag</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>-o &lt;dir&gt;</code></td><td>Output directory (default: <code>./build</code>)</td></tr>
+              <tr><td><code>--no-color</code></td><td>Disable ANSI colors in diagnostics</td></tr>
+              <tr><td><code>--verbose</code></td><td>Extra diagnostic detail</td></tr>
+              <tr><td><code>--version</code></td><td>Print compiler version</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- DIAGNOSTICS                                           -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/diagnostics" data-title="Diagnostics">
+          <h1>Diagnostics</h1>
+          <p class="lead">Modra's compiler reports errors with source carets, code labels,
+             and a stable error code per category.</p>
+
+          <h2>Error code namespaces</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Prefix</th><th>Phase</th><th>Examples</th></tr></thead>
+            <tbody>
+              <tr><td><code>MOD-L###</code></td><td>Lexer</td><td>Unterminated string, bad escape</td></tr>
+              <tr><td><code>MOD-P###</code></td><td>Parser</td><td>Unexpected token, missing close paren</td></tr>
+              <tr><td><code>MOD-S###</code></td><td>Semantic</td><td>Unknown name, type mismatch</td></tr>
+              <tr><td><code>MOD-E###</code></td><td>Emitter</td><td>Unsupported native, schema cycle</td></tr>
+            </tbody>
+          </table></div>
+
+          <h2>What an error looks like</h2>
+          <div class="code-wrap"><span class="code-label">bash</span><pre><code data-lang="bash">error[MOD-S002]: Cannot find name 'Custmer'
+  ┌─ src/app.modra:14:23
+14 │   Array<Customer>: Custmer <- DB.Users.All()
+   │                       ^^^^^^^ help: did you mean 'Customer'?</code></pre></div>
+
+          <h2>Suppressing</h2>
+          <p>For 1.0, diagnostics cannot be suppressed line-by-line. The recommended
+             pattern is to fix the cause or wrap the unknown logic in a native bridge:</p>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Action: LoadBlob(seed: String) -> (
+  String: blob
+  Native<TypeScript>(in: seed; out: blob) {
+    blob = thirdPartyLib.fetch(seed);
+  }
+  Show: Toast("loaded " + blob)
+)</code></pre></div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- COMPARISON                                            -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/comparison" data-title="vs other languages">
+          <h1>Modra vs other languages</h1>
+          <p class="lead">A reactive counter, written six ways. Same behaviour — vastly
+             different ceremony.</p>
+
+          <div class="tabs" id="cmp-tabs">
+            <button class="tab active" data-cmp="modra">Modra</button>
+            <button class="tab" data-cmp="js">JavaScript (React)</button>
+            <button class="tab" data-cmp="ts">TypeScript</button>
+            <button class="tab" data-cmp="py">Python (Flask + HTMX)</button>
+            <button class="tab" data-cmp="java">Java (Spring + Thymeleaf)</button>
+            <button class="tab" data-cmp="go">Go (net/http + html/template)</button>
+            <button class="tab" data-cmp="cs">C# (ASP.NET Razor)</button>
+          </div>
+
+          <div class="tab-panel active" data-cmp-panel="modra">
+            <div class="code-wrap"><span class="code-label">modra · 1 file · 12 lines</span><pre><code data-lang="modra">Number: Count <- 0
+
+Action: Increment -> ( Count <- Count + 1 )
+Action: Reset     -> ( Count <- 0 )
+
+Component: Counter -> (
+  Text: Display <- "Count is " + Count
+
+  form (
+    Submit  label: "+"      Click -> Increment
+    Submit  label: "Reset"  Click -> Reset
+  )
+)</code></pre></div>
+            <p>One file, zero imports. State is reactive, mutations live in named Actions.</p>
+          </div>
+
+          <div class="tab-panel" data-cmp-panel="js">
+            <div class="code-wrap"><span class="code-label">javascript · ~28 lines</span><pre><code data-lang="javascript">import { useState } from "react";
+
+export default function Counter() {
+  const [count, setCount] = useState(0);
+  return (
+    <form>
+      <h1>Count: {count}</h1>
+      <button type="button" onClick={() => setCount(count + 1)}>
+        +
+      </button>
+      <button type="button" onClick={() => setCount(0)}>
+        Reset
+      </button>
+    </form>
+  );
+}</code></pre></div>
+            <p>Same logic, but requires JSX, <code>useState</code>, and explicit handlers.</p>
+          </div>
+
+          <div class="tab-panel" data-cmp-panel="ts">
+            <div class="code-wrap"><span class="code-label">typescript · ~30 lines</span><pre><code data-lang="typescript">import { useState } from "react";
+
+type CounterProps = {
+  initial?: number;
+};
+
+export default function Counter({ initial = 0 }: CounterProps): JSX.Element {
+  const [count, setCount] = useState<number>(initial);
+  return (
+    <form>
+      <h1>Count: {count}</h1>
+      <button type="button" onClick={() => setCount((c) => c + 1)}>+</button>
+      <button type="button" onClick={() => setCount(0)}>Reset</button>
+    </form>
+  );
+}</code></pre></div>
+          </div>
+
+          <div class="tab-panel" data-cmp-panel="py">
+            <div class="code-wrap"><span class="code-label">python · flask · 2 files</span><pre><code data-lang="python">from flask import Flask, render_template, request, redirect
+
+app = Flask(__name__)
+state = {"count": 0}
+
+@app.route("/", methods=["GET"])
+def index():
+    return render_template("counter.html", count=state["count"])
+
+@app.route("/inc", methods=["POST"])
+def inc():
+    state["count"] += 1
+    return redirect("/")
+
+@app.route("/reset", methods=["POST"])
+def reset():
+    state["count"] = 0
+    return redirect("/")</code></pre></div>
+
+            <div class="code-wrap"><span class="code-label">html · counter.html</span><pre><code data-lang="html">&lt;form&gt;
+  &lt;h1&gt;Count: {{ count }}&lt;/h1&gt;
+  &lt;button hx-post="/inc"&gt;+&lt;/button&gt;
+  &lt;button hx-post="/reset"&gt;Reset&lt;/button&gt;
+&lt;/form&gt;</code></pre></div>
+          </div>
+
+          <div class="tab-panel" data-cmp-panel="java">
+            <div class="code-wrap"><span class="code-label">java · CounterController.java</span><pre><code data-lang="java">@Controller
+public class CounterController {
+  private int count = 0;
+
+  @GetMapping("/")
+  public String index(Model model) {
+    model.addAttribute("count", count);
+    return "counter";
+  }
+
+  @PostMapping("/inc")
+  public String inc() {
+    count++;
+    return "redirect:/";
+  }
+
+  @PostMapping("/reset")
+  public String reset() {
+    count = 0;
+    return "redirect:/";
+  }
+}</code></pre></div>
+            <div class="code-wrap"><span class="code-label">html · templates/counter.html</span><pre><code data-lang="html">&lt;form&gt;
+  &lt;h1&gt;Count: &lt;span th:text="${count}"&gt;0&lt;/span&gt;&lt;/h1&gt;
+  &lt;form th:action="@{/inc}" method="post"&gt;
+    &lt;button type="submit"&gt;+&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/form&gt;</code></pre></div>
+          </div>
+
+          <div class="tab-panel" data-cmp-panel="go">
+            <div class="code-wrap"><span class="code-label">go · main.go</span><pre><code data-lang="go">package main
+
+import (
+  "html/template"
+  "net/http"
+  "sync"
+)
+
+var (
+  mu    sync.Mutex
+  count int
+  tpl   = template.Must(template.New("c").Parse(`
+&lt;form&gt;
+  &lt;h1&gt;Count: {{.}}&lt;/h1&gt;
+  &lt;button formaction="/inc" formmethod="post"&gt;+&lt;/button&gt;
+  &lt;button formaction="/reset" formmethod="post"&gt;Reset&lt;/button&gt;
+&lt;/form&gt;`))
+)
+
+func main() {
+  http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+    mu.Lock(); defer mu.Unlock(); tpl.Execute(w, count)
+  })
+  http.HandleFunc("/inc", func(w http.ResponseWriter, r *http.Request) {
+    mu.Lock(); count++; mu.Unlock(); http.Redirect(w, r, "/", 302)
+  })
+  http.HandleFunc("/reset", func(w http.ResponseWriter, r *http.Request) {
+    mu.Lock(); count = 0; mu.Unlock(); http.Redirect(w, r, "/", 302)
+  })
+  http.ListenAndServe(":8080", nil)
+}</code></pre></div>
+          </div>
+
+          <div class="tab-panel" data-cmp-panel="cs">
+            <div class="code-wrap"><span class="code-label">c# · Index.cshtml.cs</span><pre><code data-lang="csharp">public class IndexModel : PageModel
+{
+  public static int Count = 0;
+
+  public void OnGet() { }
+
+  public IActionResult OnPostInc() {
+    Count++;
+    return RedirectToPage();
+  }
+
+  public IActionResult OnPostReset() {
+    Count = 0;
+    return RedirectToPage();
+  }
+}</code></pre></div>
+            <div class="code-wrap"><span class="code-label">razor · Index.cshtml</span><pre><code data-lang="csharp">@page
+@model IndexModel
+&lt;form method="post"&gt;
+  &lt;h1&gt;Count: @IndexModel.Count&lt;/h1&gt;
+  &lt;button asp-page-handler="Inc"&gt;+&lt;/button&gt;
+  &lt;button asp-page-handler="Reset"&gt;Reset&lt;/button&gt;
+&lt;/form&gt;</code></pre></div>
+          </div>
+
+          <h2>Concept mapping</h2>
+          <div class="table-wrap"><table>
+            <thead>
+              <tr><th>Modra</th><th>JS/React</th><th>Python (Flask)</th><th>Java (Spring)</th><th>Go</th><th>C# (.NET)</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>Component:</code></td>
+                <td><code>function Comp()</code></td>
+                <td><code>render_template</code></td>
+                <td><code>@Controller</code></td>
+                <td><code>html/template</code></td>
+                <td><code>Razor Page</code></td>
+              </tr>
+              <tr>
+                <td><code>Number: X &lt;- 0</code></td>
+                <td><code>useState(0)</code></td>
+                <td>global / session</td>
+                <td>field on bean</td>
+                <td>package var + mutex</td>
+                <td>property</td>
+              </tr>
+              <tr>
+                <td><code>Endpoint:</code></td>
+                <td>Express route</td>
+                <td><code>@app.route</code></td>
+                <td><code>@PostMapping</code></td>
+                <td><code>http.HandleFunc</code></td>
+                <td><code>OnPost…</code></td>
+              </tr>
+              <tr>
+                <td><code>Database / Table</code></td>
+                <td>Prisma schema</td>
+                <td>SQLAlchemy model</td>
+                <td>JPA entity</td>
+                <td>raw SQL + struct</td>
+                <td>EF DbSet</td>
+              </tr>
+              <tr>
+                <td><code>@@target: Server</code></td>
+                <td>folder convention</td>
+                <td>folder convention</td>
+                <td>annotation</td>
+                <td>folder convention</td>
+                <td>folder convention</td>
+              </tr>
+              <tr>
+                <td><code>Native&lt;Python&gt;</code></td>
+                <td>child_process</td>
+                <td>—</td>
+                <td>ProcessBuilder</td>
+                <td>exec.Command</td>
+                <td>Process.Start</td>
+              </tr>
+            </tbody>
+          </table></div>
+
+          <h2>Where Modra is <em>not</em> the right tool</h2>
+          <ul>
+            <li>Heavy compute / numeric kernels — use Python or Rust and call it via <code>Native&lt;…&gt;</code>.</li>
+            <li>Low-latency systems (HFT, kernels, embedded) — Modra targets web stacks only.</li>
+            <li>Large existing React codebases — Modra is greenfield-first today.</li>
+            <li>Mobile-native apps — emitting React Native is on the 1.2 roadmap.</li>
+          </ul>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- EXAMPLES                                              -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/examples" data-title="Example apps">
+          <h1>Example apps</h1>
+          <p class="lead">Each example is a complete, runnable Modra source. Try them in
+             the <a href="#/playground">playground</a> to see the emitted code.</p>
+
+          <h2>1 · Reactive counter</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Number: Count <- 0
+
+Action: Increment -> ( Count <- Count + 1 )
+Action: Reset     -> ( Count <- 0 )
+
+Component: Counter -> (
+  Text: Display <- "Count is " + Count
+
+  form (
+    Submit  label: "Increment"  Click -> Increment
+    Submit  label: "Reset"      Click -> Reset
+  )
+)</code></pre></div>
+
+          <h2>2 · Todo list</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Array<Object>: Items <- []
+String: Draft <- ""
+
+Action: Add -> (
+  Items <- Items + [Draft]
+  Draft <- ""
+)
+
+Component: TodoBoard -> (
+  Text: Header <- "Items: " + Items.length
+
+  form (
+    InputField::Draft  placeholder: "What's next?"
+    Submit             label: "Add"  Click -> Add
+  )
+)</code></pre></div>
+
+          <h2>3 · Registration with hashing &amp; uniqueness</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">using Backend.Database as DB
+
+Database: Postgres -> (
+  Table: Users -> (
+    String: ID @Primary
+    String: Email @Unique
+    String: PasswordHash
+  )
+)
+
+Endpoint: Register(email: String, password: String) -> (
+  Record: u <- DB.Users.Insert(
+    ID:           UUID(),
+    Email:        email,
+    PasswordHash: Hash(password),
+  )
+  Return: u.ID
+)
+
+Component: RegistrationForm -> (
+  form (
+    InputField::Email     placeholder: "Email"
+    InputField::Password  placeholder: "Password"
+    Submit                label: "Register"
+                          Click -> Register(Email, Password)
+  )
+)</code></pre></div>
+
+          <h2>4 · Search-as-you-type</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">using Backend.Database as DB
+
+Database: Postgres -> (
+  Table: Products -> (
+    String: ID @Primary
+    String: Name @Indexed
+  )
+)
+
+Endpoint: SearchProducts(q: String) -> (
+  Array<Object>: rows <- DB.Products.Where(Name: q)
+  Return: rows
+)
+
+Component: Search -> (
+  Array<Object>: Hits <- []
+
+  Action: RefreshSearch(q: String) -> (
+    Hits <- SearchProducts(q)
+  )
+
+  form (
+    InputField::Query  placeholder: "Search products…"
+    Submit             label: "Go"   Click -> RefreshSearch(Query)
+  )
+
+  forEach hit in Hits -> (
+    Text: Row (hit.Name)
+  )
+)</code></pre></div>
+
+          <h2>5 · Storefront with cart</h2>
+          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">using Backend.Database as DB
+
+Database: Postgres -> (
+  Table: Products -> (
+    String: ID @Primary
+    String: Name
+    Number: Price
+  )
+)
+
+Endpoint: LoadProducts -> (
+  Array<Object>: rows <- DB.Products.Select()
+  Return: rows
+)
+
+Component: Storefront -> (
+  Array<Object>: Items <- LoadProducts()
+  Array<String>: Cart  <- []
+  String: SelectedId   <- ""
+
+  Action: AddToCart -> ( Cart <- Cart + [SelectedId] )
+
+  Text: Header <- "Modra Store · " + Cart.length + " in cart"
+
+  forEach p in Items -> (
+    Text: Row (p.Name + " — $" + p.Price)
+  )
+
+  form (
+    Submit  label: "Add first"  Click -> AddToCart
+  )
+)</code></pre></div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- FAQ                                                   -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/faq" data-title="FAQ">
+          <h1>FAQ</h1>
+
+          <h3>Is Modra a framework or a language?</h3>
+          <p>A language. It has its own lexer, parser, type system, and compiler.
+             It happens to emit React + Node, but those are <em>targets</em>, not deps.</p>
+
+          <h3>Can I drop Modra into an existing app?</h3>
+          <p>Not directly in 1.0 — Modra emits its own project skeleton. You can copy
+             out the emitted components and integrate them piecemeal. First-class
+             "single-component" emission is on the 1.2 roadmap.</p>
+
+          <h3>How fast is the compiler?</h3>
+          <p>Hand-rolled, zero deps, ~6 ms for a typical file on a modern laptop. The
+             <a href="#/playground">playground</a> recompiles on every keystroke.</p>
+
+          <h3>Does it produce idiomatic React / Node?</h3>
+          <p>Yes — the emitted code is hand-readable. Components use hooks, the
+             backend uses Express, the SQL is plain DDL. No runtime magic.</p>
+
+          <h3>What about TypeScript types in the emitted code?</h3>
+          <p>The bridge (<code>shared/rpc.ts</code>, <code>shared/types.ts</code>) is fully
+             typed. Components currently use loose types; full strict TS for the UI
+             tree is on the 1.1 roadmap.</p>
+
+          <h3>How do I use my own React components?</h3>
+          <p>Wrap them with a <code>Native&lt;TypeScript&gt;</code> block, or register
+             them via <code>using Frontend.React</code> (1.1).</p>
+
+          <h3>License?</h3>
+          <p>MIT. Use it however you like.</p>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- PLAYGROUND                                            -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <section data-route="#/playground" data-title="Live playground">
+          <h1 style="margin-bottom:6px">Live playground</h1>
+          <p class="lead">Edit on the left. The bundled Modra compiler runs entirely
+             in your browser and updates every output panel on each keystroke.</p>
+          <div id="pg-root" class="playground" style="margin-top:12px">
+            <div class="pg-pane" style="grid-column:1 / -1; padding:24px; text-align:center;color:var(--text-dim)">
+              <p style="margin:8px 0">Loading the Modra compiler bundle…</p>
+              <p style="font-size:12px;color:var(--text-faint)">If this never finishes,
+                 the bundle at <code>docs/modra-bundle.js</code> may be missing. Run
+                 <code>npm run docs</code> to rebuild it.</p>
+            </div>
+          </div>
+          <p style="margin-top:12px;font-size:13px;color:var(--text-faint)">
+            <span class="kbd">Tab</span> indents two spaces · output updates after a
+            short pause · all compilation happens locally — nothing is sent to a server.
+          </p>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════ -->
+        <!-- Page footer (rendered inside every page)              -->
+        <!-- ════════════════════════════════════════════════════ -->
+        <div class="page-footer">
+          <span>Modra v1.0.0 · MIT</span>
+          <span><a href="#/">↑ Top</a> · <a href="#/faq">FAQ</a> · <a href="https://github.com" target="_blank" rel="noopener">GitHub</a></span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ─── Scripts ─────────────────────────────────────────────── -->
+  <script src="./docs/highlighter.js" defer></script>
+  <script src="./docs/playground.js"  defer></script>
+  <script src="./docs/modra-bundle.js" defer></script>
+  <script src="./docs/router.js" defer></script>
+</body>
+</html>

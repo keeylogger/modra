@@ -1,0 +1,45 @@
+name: Feature request
+description: Suggest a new language construct, emitter target, or DX improvement.
+title: "[feat] "
+labels: ["enhancement", "needs-design"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before opening a feature request, please skim the
+        [language design notes](../../README.html#/syntax) — we deliberately keep
+        the syntax tight, and additions need to earn their keep.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What's awkward today? Show a snippet that highlights the friction.
+      render: modra
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How would Modra look if this feature existed? Show before / after.
+      render: modra
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What other shapes did you reject, and why?
+    validations:
+      required: false
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Compiler impact (best guess)
+      description: Lexer / Parser / Semantic / Emitter / Stdlib / CLI — which phases does this touch?
+    validations:
+      required: false

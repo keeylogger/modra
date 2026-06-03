@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 320" role="img" aria-label="Modra">
+  <title>Modra</title>
+
+  <!-- Logo mark on the left, 280x280 -->
+  <g transform="translate(20, 20) scale(0.2734)">
+    <!-- LEFT GREEN PANEL -->
+    <path d="M 180 200 L 60 320 L 60 460 L 180 460 Z" fill="#45B85C"/>
+    <path d="M 180 200 L 180 460 L 300 460 L 300 320 Z" fill="#2E9D43"/>
+    <path d="M 180 460 L 60 460 L 60 600 L 180 720 Z" fill="#155E2B"/>
+    <path d="M 180 460 L 180 720 L 300 600 L 300 460 Z" fill="#0F4A22"/>
+    <!-- RIGHT GREEN PANEL -->
+    <path d="M 844 200 L 844 460 L 964 460 L 964 320 Z" fill="#45B85C"/>
+    <path d="M 844 200 L 724 320 L 724 460 L 844 460 Z" fill="#2E9D43"/>
+    <path d="M 844 460 L 844 720 L 964 600 L 964 460 Z" fill="#155E2B"/>
+    <path d="M 844 460 L 724 460 L 724 600 L 844 720 Z" fill="#0F4A22"/>
+    <!-- RED M -->
+    <path d="M 342 200 L 440 304 L 440 460 L 342 460 Z" fill="#C42028"/>
+    <path d="M 342 460 L 440 460 L 440 778 L 342 720 Z" fill="#A11A21"/>
+    <path d="M 440 304 L 512 380 L 512 460 L 440 460 Z" fill="#8C151C"/>
+    <path d="M 440 460 L 512 460 L 512 820 L 440 778 Z" fill="#6A121A"/>
+    <path d="M 682 200 L 584 304 L 584 460 L 682 460 Z" fill="#C42028"/>
+    <path d="M 682 460 L 584 460 L 584 778 L 682 720 Z" fill="#A11A21"/>
+    <path d="M 584 304 L 512 380 L 512 460 L 584 460 Z" fill="#8C151C"/>
+    <path d="M 584 460 L 512 460 L 512 820 L 584 778 Z" fill="#6A121A"/>
+    <path d="M 342 200 L 342 296 L 396 268 Z" fill="#E63946"/>
+    <path d="M 682 200 L 628 268 L 682 296 Z" fill="#E63946"/>
+  </g>
+
+  <text x="330" y="180" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, sans-serif"
+        font-size="160" font-weight="800" letter-spacing="-4" fill="#0F1614">modra</text>
+  <text x="330" y="240" font-family="ui-monospace, 'JetBrains Mono', 'Fira Code', monospace"
+        font-size="32" font-weight="500" letter-spacing="6" fill="#2E9D43">DECLARATIVE / FULL-STACK</text>
+</svg>

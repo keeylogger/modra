@@ -24,7 +24,7 @@
     .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
   </style>
 </head>
-<body class="min-h-screen p-6 antialiased text-slate-800">
+<body class="min-h-screen p-4 antialiased text-slate-800">
   <div id="root"></div>
 
   <script type="text/babel" data-presets="react">
@@ -89,12 +89,13 @@
               <p className="text-sm text-slate-500 mb-5">Your password is hashed by the server before it touches the DB.</p>
 
               <form onSubmit={register} className="space-y-3">
-                <Field label="Full name" value={name} onChange={setName} placeholder="Ada Lovelace" />
-                <Field label="Email" type="email" value={email} onChange={setEmail} placeholder="you@example.com" />
-                <Field label="Password" type="password" value={password} onChange={setPassword} placeholder="something strong" />
+                <Field label="Full name" value={name} onChange={setName} placeholder="Ada Lovelace" onEnter={register} />
+                <Field label="Email" type="email" value={email} onChange={setEmail} placeholder="you@example.com" onEnter={register} />
+                <Field label="Password" type="password" value={password} onChange={setPassword} placeholder="something strong" onEnter={register} />
 
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={register}
                   className="w-full mt-2 px-5 py-3 rounded-xl bg-modra-500 hover:bg-modra-600 text-white font-semibold text-sm transition-colors"
                 >
                   Create account
@@ -140,7 +141,7 @@
       );
     }
 
-    function Field({ label, type = "text", value, onChange, placeholder }) {
+    function Field({ label, type = "text", value, onChange, placeholder, onEnter }) {
       return (
         <label className="block">
           <span className="block text-xs font-semibold text-slate-600 mb-1">{label}</span>
@@ -148,6 +149,7 @@
             type={type}
             value={value}
             onChange={(e) => onChange(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter" && onEnter) { e.preventDefault(); onEnter(); } }}
             placeholder={placeholder}
             className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-modra-500 focus:ring-2 focus:ring-modra-100 outline-none text-sm"
           />

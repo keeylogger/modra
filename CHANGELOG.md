@@ -18,6 +18,15 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - `scripts/verify-docs.mjs` now also checks that every `<iframe>` in the
   examples page resolves to a real file on disk.
 
+### Changed
+- All `#/examples` iframes now share a uniform 460 px height so the gallery
+  looks even; long Modra sources scroll inside the left column instead of
+  stretching the row.
+- Submit buttons inside demo `<form>`s now use `type="button"` + `onClick`
+  (with `onKeyDown` Enter handlers on inputs) and the iframe sandbox grants
+  `allow-forms`. Without these, browsers were silently dropping form submit
+  events in the sandboxed iframe, so Add/Send/Post/Run buttons looked dead.
+
 ## [1.0.0] - 2026-06-03
 
 First public alpha. The full compiler pipeline is implemented end-to-end.

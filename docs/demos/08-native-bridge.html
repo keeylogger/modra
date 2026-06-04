@@ -24,7 +24,7 @@
     .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
   </style>
 </head>
-<body class="min-h-screen p-6 antialiased text-slate-800">
+<body class="min-h-screen p-4 antialiased text-slate-800">
   <div id="root"></div>
 
   <script type="text/babel" data-presets="react">
@@ -106,12 +106,14 @@
                 <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runAll(); } }}
                   className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:border-modra-500 focus:ring-2 focus:ring-modra-100 outline-none text-sm"
                 />
               </label>
 
               <button
-                type="submit"
+                type="button"
+                onClick={runAll}
                 disabled={running}
                 className="w-full px-5 py-3 rounded-xl bg-modra-500 hover:bg-modra-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2"
               >

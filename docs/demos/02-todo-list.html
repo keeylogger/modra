@@ -23,7 +23,7 @@
     .demo-eyebrow { font-feature-settings: "cv11", "ss01"; }
   </style>
 </head>
-<body class="min-h-screen p-6 antialiased text-slate-800">
+<body class="min-h-screen p-4 antialiased text-slate-800">
   <div id="root"></div>
 
   <script type="text/babel" data-presets="react">
@@ -80,11 +80,13 @@
               <input
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); add(); } }}
                 placeholder="What needs doing?"
                 className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-modra-500 focus:ring-2 focus:ring-modra-100 outline-none text-sm"
               />
               <button
-                type="submit"
+                type="button"
+                onClick={add}
                 className="px-5 py-2.5 rounded-xl bg-modra-500 hover:bg-modra-600 text-white font-semibold text-sm transition-colors"
               >
                 Add

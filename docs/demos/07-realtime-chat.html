@@ -25,7 +25,7 @@
     @keyframes in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   </style>
 </head>
-<body class="min-h-screen p-6 antialiased text-slate-800">
+<body class="min-h-screen p-4 antialiased text-slate-800">
   <div id="root"></div>
 
   <script type="text/babel" data-presets="react">
@@ -157,7 +157,7 @@
             </aside>
 
             {/* ── Conversation ── */}
-            <section className="md:col-span-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col h-[480px]">
+            <section className="md:col-span-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col h-[400px]">
               <header className="border-b border-slate-100 px-5 py-3 flex items-baseline justify-between">
                 <div>
                   <div className="font-mono text-sm font-bold text-slate-900">#{channelId}</div>
@@ -198,11 +198,13 @@
                 <input
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); send(); } }}
                   placeholder={"Say something in #" + channelId}
                   className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-modra-500 focus:ring-2 focus:ring-modra-100 outline-none text-sm"
                 />
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={send}
                   className="px-5 py-2.5 rounded-xl bg-modra-500 hover:bg-modra-600 text-white font-semibold text-sm transition-colors"
                 >
                   Send

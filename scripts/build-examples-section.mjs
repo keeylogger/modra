@@ -19,54 +19,51 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
 
+// Every row uses the same iframe height so the gallery looks even.
+// Demos that overflow this scroll internally (chrome-bar makes the
+// "window with scrollable content" affordance obvious).
+const DEMO_HEIGHT = 460;
+
 const EXAMPLES = [
   {
     file: "01-counter.modra",        demo: "01-counter.html",
     title: "Counter",
     blurb: "Reactive state, Actions, controlled buttons. The entire app is 13 lines of Modra; press +/− to see the <code>&lt;-</code> binding re-render.",
-    height: 460,
   },
   {
     file: "02-todo-list.modra",      demo: "02-todo-list.html",
     title: "Todo list",
     blurb: "Array state, list mutation, derived text, two-way input via <code>InputField::Draft</code>, and <code>forEach</code> rendering.",
-    height: 640,
   },
   {
     file: "03-registration.modra",   demo: "03-registration.html",
     title: "Registration (full-stack in one file)",
     blurb: "Postgres schema, server endpoint, hashed password, and a uniqueness constraint &mdash; all in a single declaration. The right panel shows the in-memory <code>DB.Users</code> table updating live.",
-    height: 660,
   },
   {
     file: "04-blog.modra",           demo: "04-blog.html",
     title: "Tiny blog",
     blurb: "Multiple related tables, query endpoints, server-driven list, derived counts, and a comment form that adds rows to <code>DB.Comments</code>.",
-    height: 660,
   },
   {
     file: "05-storefront.modra",     demo: "05-storefront.html",
     title: "Storefront with cart and checkout",
     blurb: "A fuller real-world app &mdash; product catalogue, cart state with quantities, a <code>Checkout</code> endpoint that wraps several DB inserts, and toast notifications.",
-    height: 720,
   },
   {
     file: "06-dashboard.modra",      demo: "06-dashboard.html",
     title: "Admin dashboard",
     blurb: "Multiple endpoints, time-windowed queries (<code>Now() - Days(window)</code>), derived KPIs, and a compact UI built from primitives. Switch 7d / 14d / 30d to re-fetch.",
-    height: 580,
   },
   {
     file: "07-realtime-chat.modra",  demo: "07-realtime-chat.html",
     title: "Realtime chat",
     blurb: "Channels, a polling endpoint, and a chat UI that streams the visible message list reactively. Type a message &mdash; another participant replies a moment later.",
-    height: 640,
   },
   {
     file: "08-native-bridge.modra",  demo: "08-native-bridge.html",
     title: "Native bridges (Python, TypeScript, Bash)",
     blurb: "<code>Native&lt;Lang&gt;</code> blocks let Modra hand a problem off to another runtime. The compiler generates the subprocess wiring; you call it like a normal Modra action.",
-    height: 660,
   },
 ];
 
@@ -111,7 +108,10 @@ function buildSection() {
       `                  <span class="example-frame-url">modra-runtime &middot; ${htmlEscape(ex.title.toLowerCase())}</span>`,
       `                  <a class="example-frame-open" href="${demoUrl}" target="_blank" rel="noopener" title="Open demo in a new tab">open &nearr;</a>`,
       `                </div>`,
-      `                <iframe class="example-iframe" src="${demoUrl}" loading="lazy" sandbox="allow-scripts" title="${htmlEscapeAttr(iframeTitle)}" style="height:${ex.height}px"></iframe>`,
+      // NOTE: sandbox MUST include `allow-forms` — without it the browser
+      // refuses to dispatch the submit event and React's onSubmit handler
+      // (which calls preventDefault and runs the real action) never fires.
+      `                <iframe class="example-iframe" src="${demoUrl}" loading="lazy" sandbox="allow-scripts allow-forms" title="${htmlEscapeAttr(iframeTitle)}" style="height:${DEMO_HEIGHT}px"></iframe>`,
       `              </div>`,
       `            </div>`,
       `          </article>`,

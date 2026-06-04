@@ -28,7 +28,7 @@
 
   // Routes that benefit from a wider content column (overrides the
   // default ~980px reading width set by `.content`).
-  const WIDE_ROUTES = new Set(["#/playground"]);
+  const WIDE_ROUTES = new Set(["#/playground", "#/examples"]);
 
   // ─── Theme ──────────────────────────────────────────────────
   function applyTheme(t) {

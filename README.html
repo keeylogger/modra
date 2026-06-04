@@ -1575,26 +1575,79 @@ func main() {
         <!-- ════════════════════════════════════════════════════ -->
         <section data-route="#/examples" data-title="Example apps">
           <h1>Example apps</h1>
-          <p class="lead">Each example is a complete, runnable Modra source. Try them in
-             the <a href="#/playground">playground</a> to see the emitted code.</p>
+          <p class="lead">Each card below is a real Modra source on the left and the compiled React + Tailwind app on the right.
+             The runtime is sandboxed in an iframe so you can poke at the UI live;
+             backends use an in-memory stand-in for Postgres so demos stay self-contained.
+             For the &lsquo;real&rsquo; emitted code (Node + SQL + RPC bridge), try the <a href="#/playground">playground</a>.</p>
 
-          <h2>1 · Reactive counter</h2>
-          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Number: Count &lt;- 0
+          <div class="example-toc">
+            <a class="example-toc-link" href="#ex-01">1. Counter</a>
+            <a class="example-toc-link" href="#ex-02">2. Todo list</a>
+            <a class="example-toc-link" href="#ex-03">3. Registration (full-stack in one file)</a>
+            <a class="example-toc-link" href="#ex-04">4. Tiny blog</a>
+            <a class="example-toc-link" href="#ex-05">5. Storefront with cart and checkout</a>
+            <a class="example-toc-link" href="#ex-06">6. Admin dashboard</a>
+            <a class="example-toc-link" href="#ex-07">7. Realtime chat</a>
+            <a class="example-toc-link" href="#ex-08">8. Native bridges (Python, TypeScript, Bash)</a>
+          </div>
+
+          <article class="example-pair" id="ex-01">
+            <header class="example-header">
+              <h2>1 &middot; Counter</h2>
+              <a class="example-source-link" href="https://github.com/keeylogger/modra/blob/main/examples/01-counter.modra" target="_blank" rel="noopener">View .modra source &nearr;</a>
+            </header>
+            <p class="example-summary">Reactive state, Actions, controlled buttons. The entire app is 13 lines of Modra; press +/− to see the <code>&lt;-</code> binding re-render.</p>
+            <div class="example-grid">
+              <div class="example-source">
+                <div class="code-wrap"><span class="code-label">examples/01-counter.modra</span><pre><code data-lang="modra">// ─────────────────────────────────────────────────────────────────────────────
+// 01 · Counter
+// Reactive state + actions in 13 lines. No imports, no boilerplate.
+// Build:  modra build examples/01-counter.modra -o ./out
+// ─────────────────────────────────────────────────────────────────────────────
+
+Number: Count &lt;- 0
 
 Action: Increment -&gt; ( Count &lt;- Count + 1 )
+Action: Decrement -&gt; ( Count &lt;- Count - 1 )
 Action: Reset     -&gt; ( Count &lt;- 0 )
 
 Component: Counter -&gt; (
   Text: Display &lt;- "Count is " + Count
 
   form (
-    Submit  label: "Increment"  Click -&gt; Increment
-    Submit  label: "Reset"      Click -&gt; Reset
+    Submit label: "−"      Click -&gt; Decrement
+    Submit label: "Reset"  Click -&gt; Reset
+    Submit label: "+"      Click -&gt; Increment
   )
 )</code></pre></div>
+              </div>
+              <div class="example-preview">
+                <div class="example-frame-bar">
+                  <span class="example-frame-dot dot-r"></span>
+                  <span class="example-frame-dot dot-y"></span>
+                  <span class="example-frame-dot dot-g"></span>
+                  <span class="example-frame-url">modra-runtime &middot; counter</span>
+                  <a class="example-frame-open" href="./docs/demos/01-counter.html" target="_blank" rel="noopener" title="Open demo in a new tab">open &nearr;</a>
+                </div>
+                <iframe class="example-iframe" src="./docs/demos/01-counter.html" loading="lazy" sandbox="allow-scripts" title="Counter demo" style="height:460px"></iframe>
+              </div>
+            </div>
+          </article>
+          <article class="example-pair" id="ex-02">
+            <header class="example-header">
+              <h2>2 &middot; Todo list</h2>
+              <a class="example-source-link" href="https://github.com/keeylogger/modra/blob/main/examples/02-todo-list.modra" target="_blank" rel="noopener">View .modra source &nearr;</a>
+            </header>
+            <p class="example-summary">Array state, list mutation, derived text, two-way input via <code>InputField::Draft</code>, and <code>forEach</code> rendering.</p>
+            <div class="example-grid">
+              <div class="example-source">
+                <div class="code-wrap"><span class="code-label">examples/02-todo-list.modra</span><pre><code data-lang="modra">// ─────────────────────────────────────────────────────────────────────────────
+// 02 · Todo list
+// Demonstrates: array state, list mutation, derived text, two-way input
+// binding via InputField::, and forEach rendering.
+// ─────────────────────────────────────────────────────────────────────────────
 
-          <h2>2 · Todo list</h2>
-          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">Array&lt;Object&gt;: Items &lt;- []
+Array&lt;String&gt;: Items &lt;- []
 String: Draft &lt;- ""
 
 Action: Add -&gt; (
@@ -1602,109 +1655,550 @@ Action: Add -&gt; (
   Draft &lt;- ""
 )
 
+Action: Clear -&gt; ( Items &lt;- [] )
+
+Action: RemoveAt(index: Number) -&gt; (
+  Items &lt;- Items.WithoutAt(index)
+)
+
 Component: TodoBoard -&gt; (
-  Text: Header &lt;- "Items: " + Items.length
+  Text: Header &lt;- "You have " + Items.length + " item(s)"
 
   form (
-    InputField::Draft  placeholder: "What's next?"
-    Submit             label: "Add"  Click -&gt; Add
+    InputField::Draft  placeholder: "What needs doing?"
+    Submit             label: "Add"    Click -&gt; Add
+    Submit             label: "Clear"  Click -&gt; Clear
+  )
+
+  forEach item in Items -&gt; (
+    Text: Row (item)
   )
 )</code></pre></div>
+              </div>
+              <div class="example-preview">
+                <div class="example-frame-bar">
+                  <span class="example-frame-dot dot-r"></span>
+                  <span class="example-frame-dot dot-y"></span>
+                  <span class="example-frame-dot dot-g"></span>
+                  <span class="example-frame-url">modra-runtime &middot; todo list</span>
+                  <a class="example-frame-open" href="./docs/demos/02-todo-list.html" target="_blank" rel="noopener" title="Open demo in a new tab">open &nearr;</a>
+                </div>
+                <iframe class="example-iframe" src="./docs/demos/02-todo-list.html" loading="lazy" sandbox="allow-scripts" title="Todo list demo" style="height:640px"></iframe>
+              </div>
+            </div>
+          </article>
+          <article class="example-pair" id="ex-03">
+            <header class="example-header">
+              <h2>3 &middot; Registration (full-stack in one file)</h2>
+              <a class="example-source-link" href="https://github.com/keeylogger/modra/blob/main/examples/03-registration.modra" target="_blank" rel="noopener">View .modra source &nearr;</a>
+            </header>
+            <p class="example-summary">Postgres schema, server endpoint, hashed password, and a uniqueness constraint &mdash; all in a single declaration. The right panel shows the in-memory <code>DB.Users</code> table updating live.</p>
+            <div class="example-grid">
+              <div class="example-source">
+                <div class="code-wrap"><span class="code-label">examples/03-registration.modra</span><pre><code data-lang="modra">// ─────────────────────────────────────────────────────────────────────────────
+// 03 · Registration (full-stack in one file)
+// Demonstrates: Postgres schema, server endpoint, password hashing,
+// uniqueness constraint, and a 3-field client form that calls the server
+// directly (Modra auto-bridges the RPC).
+// ─────────────────────────────────────────────────────────────────────────────
 
-          <h2>3 · Registration with hashing &amp; uniqueness</h2>
-          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">using Backend.Database as DB
+using Backend.Database as DB
+using Backend.Crypto    as Crypto
 
 Database: Postgres -&gt; (
   Table: Users -&gt; (
-    String: ID @Primary
-    String: Email @Unique
-    String: PasswordHash
+    String:   ID            @Primary
+    String:   Name
+    String:   Email         @Unique
+    String:   PasswordHash
+    DateTime: CreatedAt     @Default(Now)
   )
 )
 
-Endpoint: Register(email: String, password: String) -&gt; (
+Endpoint: Register(name: String, email: String, password: String) -&gt; (
   Record: u &lt;- DB.Users.Insert(
     ID:           UUID(),
+    Name:         name,
     Email:        email,
-    PasswordHash: Hash(password),
+    PasswordHash: Crypto.Hash(password),
   )
   Return: u.ID
 )
 
 Component: RegistrationForm -&gt; (
-  form (
-    InputField::Email     placeholder: "Email"
-    InputField::Password  placeholder: "Password"
-    Submit                label: "Register"
-                          Click -&gt; Register(Email, Password)
-  )
-)</code></pre></div>
+  String: Status &lt;- ""
 
-          <h2>4 · Search-as-you-type</h2>
-          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">using Backend.Database as DB
+  form (
+    InputField::Name      placeholder: "Full name"
+    InputField::Email     placeholder: "Email address"
+    InputField::Password  placeholder: "Password"
+    Submit                label: "Create account"
+                          Click -&gt; Register(Name, Email, Password)
+  )
+
+  Text: StatusLine &lt;- Status
+)</code></pre></div>
+              </div>
+              <div class="example-preview">
+                <div class="example-frame-bar">
+                  <span class="example-frame-dot dot-r"></span>
+                  <span class="example-frame-dot dot-y"></span>
+                  <span class="example-frame-dot dot-g"></span>
+                  <span class="example-frame-url">modra-runtime &middot; registration (full-stack in one file)</span>
+                  <a class="example-frame-open" href="./docs/demos/03-registration.html" target="_blank" rel="noopener" title="Open demo in a new tab">open &nearr;</a>
+                </div>
+                <iframe class="example-iframe" src="./docs/demos/03-registration.html" loading="lazy" sandbox="allow-scripts" title="Registration (full-stack in one file) demo" style="height:660px"></iframe>
+              </div>
+            </div>
+          </article>
+          <article class="example-pair" id="ex-04">
+            <header class="example-header">
+              <h2>4 &middot; Tiny blog</h2>
+              <a class="example-source-link" href="https://github.com/keeylogger/modra/blob/main/examples/04-blog.modra" target="_blank" rel="noopener">View .modra source &nearr;</a>
+            </header>
+            <p class="example-summary">Multiple related tables, query endpoints, server-driven list, derived counts, and a comment form that adds rows to <code>DB.Comments</code>.</p>
+            <div class="example-grid">
+              <div class="example-source">
+                <div class="code-wrap"><span class="code-label">examples/04-blog.modra</span><pre><code data-lang="modra">// ─────────────────────────────────────────────────────────────────────────────
+// 04 · Tiny blog
+// Demonstrates: multiple related tables, query endpoints, server-driven list,
+// derived counts, and conditional rendering.
+// ─────────────────────────────────────────────────────────────────────────────
+
+using Backend.Database as DB
 
 Database: Postgres -&gt; (
-  Table: Products -&gt; (
-    String: ID @Primary
-    String: Name @Indexed
+  Table: Authors -&gt; (
+    String:   ID    @Primary
+    String:   Name
+    String:   Email @Unique
+  )
+
+  Table: Posts -&gt; (
+    String:   ID         @Primary
+    String:   AuthorID   @References(Authors.ID)
+    String:   Title
+    String:   Body
+    DateTime: PublishedAt
+  )
+
+  Table: Comments -&gt; (
+    String:   ID       @Primary
+    String:   PostID   @References(Posts.ID)
+    String:   Author
+    String:   Body
+    DateTime: PostedAt @Default(Now)
   )
 )
 
-Endpoint: SearchProducts(q: String) -&gt; (
-  Array&lt;Object&gt;: rows &lt;- DB.Products.Where(Name: q)
+Endpoint: LatestPosts(limit: Number) -&gt; (
+  Array&lt;Object&gt;: rows &lt;- DB.Posts
+    .OrderBy(PublishedAt, descending: true)
+    .Take(limit)
   Return: rows
 )
 
-Component: Search -&gt; (
-  Array&lt;Object&gt;: Hits &lt;- []
+Endpoint: PostWithComments(id: String) -&gt; (
+  Record: post           &lt;- DB.Posts.Find(id)
+  Array&lt;Object&gt;: comments &lt;- DB.Comments.Where(PostID: id)
+  Return: { Post: post, Comments: comments }
+)
 
-  Action: RefreshSearch(q: String) -&gt; (
-    Hits &lt;- SearchProducts(q)
+Endpoint: AddComment(postId: String, author: String, body: String) -&gt; (
+  Record: c &lt;- DB.Comments.Insert(
+    ID:     UUID(),
+    PostID: postId,
+    Author: author,
+    Body:   body,
   )
+  Return: c
+)
 
-  form (
-    InputField::Query  placeholder: "Search products…"
-    Submit             label: "Go"   Click -&gt; RefreshSearch(Query)
-  )
+Component: Feed -&gt; (
+  Array&lt;Object&gt;: Posts &lt;- LatestPosts(10)
+  Text: Heading &lt;- "Latest posts (" + Posts.length + ")"
 
-  forEach hit in Hits -&gt; (
-    Text: Row (hit.Name)
+  forEach post in Posts -&gt; (
+    Text: Title &lt;- post.Title
+    Text: Body  &lt;- post.Body
   )
 )</code></pre></div>
+              </div>
+              <div class="example-preview">
+                <div class="example-frame-bar">
+                  <span class="example-frame-dot dot-r"></span>
+                  <span class="example-frame-dot dot-y"></span>
+                  <span class="example-frame-dot dot-g"></span>
+                  <span class="example-frame-url">modra-runtime &middot; tiny blog</span>
+                  <a class="example-frame-open" href="./docs/demos/04-blog.html" target="_blank" rel="noopener" title="Open demo in a new tab">open &nearr;</a>
+                </div>
+                <iframe class="example-iframe" src="./docs/demos/04-blog.html" loading="lazy" sandbox="allow-scripts" title="Tiny blog demo" style="height:660px"></iframe>
+              </div>
+            </div>
+          </article>
+          <article class="example-pair" id="ex-05">
+            <header class="example-header">
+              <h2>5 &middot; Storefront with cart and checkout</h2>
+              <a class="example-source-link" href="https://github.com/keeylogger/modra/blob/main/examples/05-storefront.modra" target="_blank" rel="noopener">View .modra source &nearr;</a>
+            </header>
+            <p class="example-summary">A fuller real-world app &mdash; product catalogue, cart state with quantities, a <code>Checkout</code> endpoint that wraps several DB inserts, and toast notifications.</p>
+            <div class="example-grid">
+              <div class="example-source">
+                <div class="code-wrap"><span class="code-label">examples/05-storefront.modra</span><pre><code data-lang="modra">// ─────────────────────────────────────────────────────────────────────────────
+// 05 · Storefront with cart and checkout
+// Demonstrates: a fuller real-world app — products list, cart state,
+// checkout endpoint that wraps several DB ops, and notifications.
+// ─────────────────────────────────────────────────────────────────────────────
 
-          <h2>5 · Storefront with cart</h2>
-          <div class="code-wrap"><span class="code-label">modra</span><pre><code data-lang="modra">using Backend.Database as DB
+using Backend.Database as DB
 
 Database: Postgres -&gt; (
   Table: Products -&gt; (
-    String: ID @Primary
-    String: Name
+    String: ID          @Primary
+    String: Name        @Indexed
+    String: Description
     Number: Price
+    Number: Stock
+  )
+
+  Table: Orders -&gt; (
+    String:   ID         @Primary
+    String:   CustomerID
+    DateTime: PlacedAt   @Default(Now)
+    Number:   Total
+  )
+
+  Table: OrderLines -&gt; (
+    String: ID        @Primary
+    String: OrderID   @References(Orders.ID)
+    String: ProductID @References(Products.ID)
+    Number: Quantity
+    Number: UnitPrice
   )
 )
 
 Endpoint: LoadProducts -&gt; (
-  Array&lt;Object&gt;: rows &lt;- DB.Products.Select()
+  Array&lt;Object&gt;: rows &lt;- DB.Products
+    .Where(Stock: { greaterThan: 0 })
+    .OrderBy(Name)
   Return: rows
+)
+
+Endpoint: Checkout(customerId: String, lines: Array&lt;Object&gt;) -&gt; (
+  Number: total &lt;- lines.Sum(line.UnitPrice * line.Quantity)
+  Record: order &lt;- DB.Orders.Insert(
+    ID:         UUID(),
+    CustomerID: customerId,
+    Total:      total,
+  )
+  forEach line in lines -&gt; (
+    DB.OrderLines.Insert(
+      ID:        UUID(),
+      OrderID:   order.ID,
+      ProductID: line.ProductID,
+      Quantity:  line.Quantity,
+      UnitPrice: line.UnitPrice,
+    )
+  )
+  Return: order.ID
 )
 
 Component: Storefront -&gt; (
   Array&lt;Object&gt;: Items &lt;- LoadProducts()
-  Array&lt;String&gt;: Cart  &lt;- []
-  String: SelectedId   &lt;- ""
+  Array&lt;Object&gt;: Cart  &lt;- []
+  String: CustomerID   &lt;- "guest"
 
-  Action: AddToCart -&gt; ( Cart &lt;- Cart + [SelectedId] )
+  Action: AddToCart(productId: String, price: Number) -&gt; (
+    Cart &lt;- Cart + [{
+      ProductID: productId,
+      Quantity:  1,
+      UnitPrice: price,
+    }]
+    Show: Toast("Added to cart")
+  )
 
-  Text: Header &lt;- "Modra Store · " + Cart.length + " in cart"
+  Action: PlaceOrder -&gt; (
+    String: orderId &lt;- Checkout(CustomerID, Cart)
+    Show: Toast("Order " + orderId + " placed!")
+    Cart &lt;- []
+  )
+
+  Text: Header  &lt;- "Modra Store"
+  Text: Summary &lt;- Cart.length + " item(s) - $" + Cart.Sum(item.UnitPrice * item.Quantity)
 
   forEach p in Items -&gt; (
-    Text: Row (p.Name + " — $" + p.Price)
+    Text: Row (p.Name + " - $" + p.Price)
   )
 
   form (
-    Submit  label: "Add first"  Click -&gt; AddToCart
+    Submit label: "Place order"  Click -&gt; PlaceOrder
   )
 )</code></pre></div>
+              </div>
+              <div class="example-preview">
+                <div class="example-frame-bar">
+                  <span class="example-frame-dot dot-r"></span>
+                  <span class="example-frame-dot dot-y"></span>
+                  <span class="example-frame-dot dot-g"></span>
+                  <span class="example-frame-url">modra-runtime &middot; storefront with cart and checkout</span>
+                  <a class="example-frame-open" href="./docs/demos/05-storefront.html" target="_blank" rel="noopener" title="Open demo in a new tab">open &nearr;</a>
+                </div>
+                <iframe class="example-iframe" src="./docs/demos/05-storefront.html" loading="lazy" sandbox="allow-scripts" title="Storefront with cart and checkout demo" style="height:720px"></iframe>
+              </div>
+            </div>
+          </article>
+          <article class="example-pair" id="ex-06">
+            <header class="example-header">
+              <h2>6 &middot; Admin dashboard</h2>
+              <a class="example-source-link" href="https://github.com/keeylogger/modra/blob/main/examples/06-dashboard.modra" target="_blank" rel="noopener">View .modra source &nearr;</a>
+            </header>
+            <p class="example-summary">Multiple endpoints, time-windowed queries (<code>Now() - Days(window)</code>), derived KPIs, and a compact UI built from primitives. Switch 7d / 14d / 30d to re-fetch.</p>
+            <div class="example-grid">
+              <div class="example-source">
+                <div class="code-wrap"><span class="code-label">examples/06-dashboard.modra</span><pre><code data-lang="modra">// ─────────────────────────────────────────────────────────────────────────────
+// 06 · Admin dashboard
+// Demonstrates: multiple endpoints, time-windowed queries, derived KPIs,
+// and a compact UI built from primitives.
+// ─────────────────────────────────────────────────────────────────────────────
+
+using Backend.Database as DB
+
+Database: Postgres -&gt; (
+  Table: Events -&gt; (
+    String:   ID        @Primary
+    String:   Kind
+    String:   UserID
+    DateTime: At        @Indexed
+  )
+
+  Table: Users -&gt; (
+    String:   ID         @Primary
+    String:   Email      @Unique
+    DateTime: CreatedAt
+  )
+)
+
+Endpoint: EventsLastDays(days: Number) -&gt; (
+  DateTime: since &lt;- Now() - Days(days)
+  Array&lt;Object&gt;: rows &lt;- DB.Events.Where(At: { greaterThan: since })
+  Return: rows
+)
+
+Endpoint: TopEventKinds(days: Number) -&gt; (
+  DateTime: since &lt;- Now() - Days(days)
+  Array&lt;Object&gt;: rows &lt;- DB.Events
+    .Where(At: { greaterThan: since })
+    .GroupBy(Kind)
+    .Select(Kind, count: Count())
+    .OrderBy(count, descending: true)
+    .Take(5)
+  Return: rows
+)
+
+Endpoint: NewUsers(days: Number) -&gt; (
+  DateTime: since &lt;- Now() - Days(days)
+  Number: count &lt;- DB.Users.Where(CreatedAt: { greaterThan: since }).Count()
+  Return: count
+)
+
+Component: Dashboard -&gt; (
+  Number: Window &lt;- 7
+  Array&lt;Object&gt;: AllEvents &lt;- EventsLastDays(Window)
+  Array&lt;Object&gt;: TopKinds  &lt;- TopEventKinds(Window)
+  Number:        NewUserCount &lt;- NewUsers(Window)
+
+  Text: Title         &lt;- "Dashboard - last " + Window + " day(s)"
+  Text: TotalEvents   &lt;- "Events: " + AllEvents.length
+  Text: TotalNewUsers &lt;- "New users: " + NewUserCount
+
+  forEach row in TopKinds -&gt; (
+    Text: KindRow (row.Kind + ": " + row.count)
+  )
+
+  form (
+    InputField::Window  placeholder: "Window in days"
+    Submit              label: "Refresh"
+  )
+)</code></pre></div>
+              </div>
+              <div class="example-preview">
+                <div class="example-frame-bar">
+                  <span class="example-frame-dot dot-r"></span>
+                  <span class="example-frame-dot dot-y"></span>
+                  <span class="example-frame-dot dot-g"></span>
+                  <span class="example-frame-url">modra-runtime &middot; admin dashboard</span>
+                  <a class="example-frame-open" href="./docs/demos/06-dashboard.html" target="_blank" rel="noopener" title="Open demo in a new tab">open &nearr;</a>
+                </div>
+                <iframe class="example-iframe" src="./docs/demos/06-dashboard.html" loading="lazy" sandbox="allow-scripts" title="Admin dashboard demo" style="height:580px"></iframe>
+              </div>
+            </div>
+          </article>
+          <article class="example-pair" id="ex-07">
+            <header class="example-header">
+              <h2>7 &middot; Realtime chat</h2>
+              <a class="example-source-link" href="https://github.com/keeylogger/modra/blob/main/examples/07-realtime-chat.modra" target="_blank" rel="noopener">View .modra source &nearr;</a>
+            </header>
+            <p class="example-summary">Channels, a polling endpoint, and a chat UI that streams the visible message list reactively. Type a message &mdash; another participant replies a moment later.</p>
+            <div class="example-grid">
+              <div class="example-source">
+                <div class="code-wrap"><span class="code-label">examples/07-realtime-chat.modra</span><pre><code data-lang="modra">// ─────────────────────────────────────────────────────────────────────────────
+// 07 · Realtime chat
+// Demonstrates: a database-backed message store, a polling endpoint, and
+// a tiny chat UI that streams the visible message list reactively.
+// ─────────────────────────────────────────────────────────────────────────────
+
+using Backend.Database as DB
+
+Database: Postgres -&gt; (
+  Table: Channels -&gt; (
+    String: ID    @Primary
+    String: Name  @Unique
+  )
+
+  Table: Messages -&gt; (
+    String:   ID         @Primary
+    String:   ChannelID  @References(Channels.ID)
+    String:   Author
+    String:   Body
+    DateTime: SentAt     @Default(Now) @Indexed
+  )
+)
+
+Endpoint: MessagesSince(channelId: String, since: DateTime) -&gt; (
+  Array&lt;Object&gt;: rows &lt;- DB.Messages
+    .Where(ChannelID: channelId)
+    .Where(SentAt: { greaterThan: since })
+    .OrderBy(SentAt)
+  Return: rows
+)
+
+Endpoint: Send(channelId: String, author: String, body: String) -&gt; (
+  Record: msg &lt;- DB.Messages.Insert(
+    ID:        UUID(),
+    ChannelID: channelId,
+    Author:    author,
+    Body:      body,
+  )
+  Return: msg
+)
+
+Component: ChatRoom -&gt; (
+  String: ChannelID &lt;- "general"
+  String: Me        &lt;- "anonymous"
+  String: Draft     &lt;- ""
+
+  Array&lt;Object&gt;: History &lt;- []
+
+  Action: Refresh -&gt; (
+    DateTime: since &lt;- Now() - Minutes(60)
+    History &lt;- MessagesSince(ChannelID, since)
+  )
+
+  Action: SendMessage -&gt; (
+    Send(ChannelID, Me, Draft)
+    Draft &lt;- ""
+    Refresh()
+  )
+
+  Text: Header &lt;- "#" + ChannelID + " - " + History.length + " message(s)"
+
+  forEach m in History -&gt; (
+    Text: Line (m.Author + ": " + m.Body)
+  )
+
+  form (
+    InputField::Draft  placeholder: "Say something..."
+    Submit             label: "Send"     Click -&gt; SendMessage
+    Submit             label: "Refresh"  Click -&gt; Refresh
+  )
+)</code></pre></div>
+              </div>
+              <div class="example-preview">
+                <div class="example-frame-bar">
+                  <span class="example-frame-dot dot-r"></span>
+                  <span class="example-frame-dot dot-y"></span>
+                  <span class="example-frame-dot dot-g"></span>
+                  <span class="example-frame-url">modra-runtime &middot; realtime chat</span>
+                  <a class="example-frame-open" href="./docs/demos/07-realtime-chat.html" target="_blank" rel="noopener" title="Open demo in a new tab">open &nearr;</a>
+                </div>
+                <iframe class="example-iframe" src="./docs/demos/07-realtime-chat.html" loading="lazy" sandbox="allow-scripts" title="Realtime chat demo" style="height:640px"></iframe>
+              </div>
+            </div>
+          </article>
+          <article class="example-pair" id="ex-08">
+            <header class="example-header">
+              <h2>8 &middot; Native bridges (Python, TypeScript, Bash)</h2>
+              <a class="example-source-link" href="https://github.com/keeylogger/modra/blob/main/examples/08-native-bridge.modra" target="_blank" rel="noopener">View .modra source &nearr;</a>
+            </header>
+            <p class="example-summary"><code>Native&lt;Lang&gt;</code> blocks let Modra hand a problem off to another runtime. The compiler generates the subprocess wiring; you call it like a normal Modra action.</p>
+            <div class="example-grid">
+              <div class="example-source">
+                <div class="code-wrap"><span class="code-label">examples/08-native-bridge.modra</span><pre><code data-lang="modra">// ─────────────────────────────────────────────────────────────────────────────
+// 08 · Native bridges
+// Modra is fluent about escape hatches. When a problem is better solved in
+// another language, drop into a `Native&lt;Lang&gt; { … }` block. The compiler
+// generates the wiring (subprocess, child_process, FFI) automatically.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Classify a piece of text with a Python HuggingFace pipeline.
+Action: Classify(text: String) -&gt; (
+  Native&lt;Python&gt;(in: text; out: label) {
+    from transformers import pipeline
+    classifier = pipeline("sentiment-analysis")
+    label = classifier(text)[0]["label"]
+  }
+)
+
+// Generate a slug with a tiny TypeScript helper.
+Action: Slugify(title: String) -&gt; (
+  Native&lt;TypeScript&gt;(in: title; out: slug) {
+    slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  }
+)
+
+// Read a system metric with a one-line shell call.
+Action: ReadUptime -&gt; (
+  Native&lt;Bash&gt;(out: uptime) {
+    uptime=$(awk '{print $1}' /proc/uptime)
+  }
+)
+
+Component: BridgeDemo -&gt; (
+  String: Text       &lt;- "I love Modra"
+  String: Title      &lt;- "Hello, World! And Modra."
+  String: Sentiment  &lt;- ""
+  String: Slug       &lt;- ""
+  String: Uptime     &lt;- ""
+
+  Action: RunAll -&gt; (
+    Sentiment &lt;- Classify(Text)
+    Slug      &lt;- Slugify(Title)
+    Uptime    &lt;- ReadUptime()
+  )
+
+  Text: SentimentLine &lt;- "Sentiment: " + Sentiment
+  Text: SlugLine      &lt;- "Slug: "      + Slug
+  Text: UptimeLine    &lt;- "Uptime: "    + Uptime + "s"
+
+  form (
+    InputField::Text   placeholder: "Some text"
+    InputField::Title  placeholder: "A blog title"
+    Submit             label: "Run"  Click -&gt; RunAll
+  )
+)</code></pre></div>
+              </div>
+              <div class="example-preview">
+                <div class="example-frame-bar">
+                  <span class="example-frame-dot dot-r"></span>
+                  <span class="example-frame-dot dot-y"></span>
+                  <span class="example-frame-dot dot-g"></span>
+                  <span class="example-frame-url">modra-runtime &middot; native bridges (python, typescript, bash)</span>
+                  <a class="example-frame-open" href="./docs/demos/08-native-bridge.html" target="_blank" rel="noopener" title="Open demo in a new tab">open &nearr;</a>
+                </div>
+                <iframe class="example-iframe" src="./docs/demos/08-native-bridge.html" loading="lazy" sandbox="allow-scripts" title="Native bridges (Python, TypeScript, Bash) demo" style="height:660px"></iframe>
+              </div>
+            </div>
+          </article>
         </section>
 
         <!-- ════════════════════════════════════════════════════ -->

@@ -525,23 +525,27 @@ cd dist && npm install && npm run dev
 
 ## 🧪 Examples
 
-Try each in the [live playground](https://keeylogger.github.io/modra/README.html#/playground).
+Eight progressively-larger reference apps live under [`examples/`](./examples/) in
+this repository. The [Example apps page](https://keeylogger.github.io/modra/README.html#/examples)
+pairs each `.modra` source with the **running React + Tailwind app it compiles into**,
+side-by-side in your browser:
 
-| Example                | What it shows                                                |
-| ---------------------- | ------------------------------------------------------------ |
-| **Counter**            | Reactive state, Actions, controlled buttons                  |
-| **Todo list**          | List state, mutation, computed values                        |
-| **Registration**       | Client form + server `Endpoint` + Postgres `Table`           |
-| **Search-as-you-type** | Reactive list, debouncing pattern, server call from client   |
-| **Storefront**         | Loop rendering, cart state, multiple endpoints, DDL          |
+| #  | Example              | Live demo                                                                          | What it shows                                                  |
+| -: | -------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+|  1 | **Counter**          | [▶ run](https://keeylogger.github.io/modra/docs/demos/01-counter.html)             | Reactive state, Actions, controlled buttons                    |
+|  2 | **Todo list**        | [▶ run](https://keeylogger.github.io/modra/docs/demos/02-todo-list.html)           | Array state, `InputField::` binding, `forEach`                 |
+|  3 | **Registration**     | [▶ run](https://keeylogger.github.io/modra/docs/demos/03-registration.html)        | Full-stack form: Postgres schema, hashed password, RPC         |
+|  4 | **Tiny blog**        | [▶ run](https://keeylogger.github.io/modra/docs/demos/04-blog.html)                | Multiple related tables, query endpoints, comments             |
+|  5 | **Storefront**       | [▶ run](https://keeylogger.github.io/modra/docs/demos/05-storefront.html)          | Cart state, multi-step `Checkout`, `Toast` notification        |
+|  6 | **Admin dashboard**  | [▶ run](https://keeylogger.github.io/modra/docs/demos/06-dashboard.html)           | Time-windowed queries, group-by, derived KPIs                  |
+|  7 | **Realtime chat**    | [▶ run](https://keeylogger.github.io/modra/docs/demos/07-realtime-chat.html)       | Per-channel message log, polling endpoint, send action         |
+|  8 | **Native bridges**   | [▶ run](https://keeylogger.github.io/modra/docs/demos/08-native-bridge.html)       | Embedded Python/TS/Bash via `Native<Lang> { … }`               |
 
-Each example also lives in the [online docs](https://keeylogger.github.io/modra/README.html#/examples). The
-playground recompiles them in your browser on every keystroke.
-
-Eight progressively-larger, hand-written reference apps also live under
-[`examples/`](./examples/) in this repository — counter → todo → registration
-→ blog → storefront → dashboard → realtime chat → native bridges. CI runs
-the real Modra compiler against every one of them on every push.
+The live demos use the **same UI as the emitted React code** but stub the
+Postgres/RPC layer with in-memory mocks so they stay self-contained. To see the
+*actual* emitted code for any of these examples (Node + SQL + bridge), try them
+in the [playground](https://keeylogger.github.io/modra/README.html#/playground).
+CI runs the real Modra compiler against every example on every push.
 
 ---
 

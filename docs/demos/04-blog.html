@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tiny blog | Modra demo</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: {
+        modra: { 50: '#ecf9ef', 100: '#d3f1d8', 500: '#3FB456', 600: '#2E9D43', 700: '#155E2B' },
+        ember: { 100: '#fde2e4', 500: '#E5394A', 600: '#C72436' },
+      }}},
+    };
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    html, body { background: #f6f7f9; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+    .demo-eyebrow { font-feature-settings: "cv11", "ss01"; }
+  </style>
+</head>
+<body class="min-h-screen p-6 antialiased text-slate-800">
+  <div id="root"></div>
+
+  <script type="text/babel" data-presets="react">
+    const { useState, useMemo } = React;
+
+    // ─── Seeded "DB" data (Authors, Posts, Comments) ──────────────
+    const authors = [
+      { ID: "a1", Name: "Ada Lovelace",  Email: "ada@modra.dev" },
+      { ID: "a2", Name: "Linus Torvalds", Email: "linus@modra.dev" },
+      { ID: "a3", Name: "Margaret Hamilton", Email: "margaret@modra.dev" },
+    ];
+    const initialPosts = [
+      {
+        ID: "p1", AuthorID: "a1", Title: "Why declarative full-stack is back",
+        Body: "Modra unifies UI, server, and DB in one file. The compiler does the glue work so you don't have to ship a thousand types between layers.",
+        PublishedAt: "2026-05-22T10:00:00Z",
+      },
+      {
+        ID: "p2", AuthorID: "a2", Title: "Reading the emitted Node code",
+        Body: "Modra's output is plain, idiomatic Express. No runtime magic. You can fork the project the day the language disappears.",
+        PublishedAt: "2026-05-20T15:30:00Z",
+      },
+      {
+        ID: "p3", AuthorID: "a3", Title: "Type safety across the wire",
+        Body: "The bridge generates a typed RPC client, so Endpoint signatures cannot drift from their callers.",
+        PublishedAt: "2026-05-18T08:15:00Z",
+      },
+    ];
+    const initialComments = [
+      { ID: "c1", PostID: "p1", Author: "Grace H.",   Body: "Compiles to React without React-isms in the source. Nice.", PostedAt: "2026-05-22T10:45:00Z" },
+      { ID: "c2", PostID: "p1", Author: "Edsger D.",  Body: "Real engineering, not magic.", PostedAt: "2026-05-22T11:02:00Z" },
+      { ID: "c3", PostID: "p2", Author: "Anita B.",   Body: "I read the emitted Node code. Surprisingly readable.", PostedAt: "2026-05-20T18:11:00Z" },
+    ];
+
+    const fmt = (iso) => {
+      const d = new Date(iso);
+      return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    };
+
+    function App() {
+      const [posts] = useState(initialPosts);
+      const [comments, setComments] = useState(initialComments);
+      const [openId, setOpenId] = useState("p1");
+      const [author, setAuthor] = useState("");
+      const [body, setBody] = useState("");
+
+      const authorOf = (id) => authors.find(a => a.ID === id)?.Name ?? "Unknown";
+
+      const visibleComments = useMemo(
+        () => comments.filter(c => c.PostID === openId)
+          .sort((a, b) => a.PostedAt.localeCompare(b.PostedAt)),
+        [comments, openId],
+      );
+
+      const addComment = (e) => {
+        e?.preventDefault?.();
+        if (!author.trim() || !body.trim()) return;
+        setComments(prev => [...prev, {
+          ID: "c-" + Math.random().toString(16).slice(2, 6),
+          PostID: openId,
+          Author: author.trim(),
+          Body: body.trim(),
+          PostedAt: new Date().toISOString(),
+        }]);
+        setBody("");
+      };
+
+      return (
+        <div className="max-w-4xl mx-auto">
+          <div className="demo-eyebrow flex items-center gap-2 mb-3 text-[10px] uppercase tracking-[0.18em] font-bold text-modra-700">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-modra-500 animate-pulse"></span>
+            Modra runtime | Authors x Posts x Comments
+          </div>
+
+          <div className="grid md:grid-cols-5 gap-4">
+            {/* ── Post list ── */}
+            <aside className="md:col-span-2 rounded-2xl bg-white border border-slate-200 shadow-sm p-4">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 px-2">
+                Latest posts ({posts.length})
+              </h2>
+              <ul className="space-y-1">
+                {posts.map(p => (
+                  <li key={p.ID}>
+                    <button
+                      onClick={() => setOpenId(p.ID)}
+                      className={
+                        "w-full text-left px-3 py-3 rounded-xl transition-colors " +
+                        (openId === p.ID
+                          ? "bg-modra-50 border border-modra-100"
+                          : "hover:bg-slate-50 border border-transparent")
+                      }
+                    >
+                      <div className={"text-sm font-semibold " + (openId === p.ID ? "text-modra-700" : "text-slate-900")}>
+                        {p.Title}
+                      </div>
+                      <div className="text-[11px] text-slate-500 mt-0.5">
+                        {authorOf(p.AuthorID)} &middot; {fmt(p.PublishedAt)}
+                      </div>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </aside>
+
+            {/* ── Post detail ── */}
+            <article className="md:col-span-3 rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
+              {(() => {
+                const post = posts.find(p => p.ID === openId);
+                if (!post) return <div className="text-slate-500 text-sm">Select a post.</div>;
+                return (
+                  <div>
+                    <div className="flex items-center gap-2 text-[11px] text-slate-500 mb-2">
+                      <span className="px-2 py-0.5 rounded-full bg-modra-50 text-modra-700 font-semibold">
+                        {authorOf(post.AuthorID)}
+                      </span>
+                      <span>{fmt(post.PublishedAt)}</span>
+                    </div>
+                    <h1 className="text-2xl font-bold text-slate-900 mb-3">{post.Title}</h1>
+                    <p className="text-sm text-slate-700 leading-relaxed">{post.Body}</p>
+
+                    <div className="mt-5 pt-5 border-t border-slate-100">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                        Comments ({visibleComments.length})
+                      </h3>
+                      {visibleComments.length === 0 && (
+                        <div className="text-xs text-slate-400 mb-3">Be the first to comment.</div>
+                      )}
+                      <ul className="space-y-2 mb-4">
+                        {visibleComments.map(c => (
+                          <li key={c.ID} className="px-3 py-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                            <div className="text-[11px] font-semibold text-slate-600">{c.Author} <span className="text-slate-400 font-normal">&middot; {fmt(c.PostedAt)}</span></div>
+                            <div className="text-sm text-slate-800">{c.Body}</div>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <form onSubmit={addComment} className="space-y-2">
+                        <input
+                          value={author}
+                          onChange={(e) => setAuthor(e.target.value)}
+                          placeholder="Your name"
+                          className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:border-modra-500 focus:ring-2 focus:ring-modra-100 outline-none text-sm"
+                        />
+                        <textarea
+                          value={body}
+                          onChange={(e) => setBody(e.target.value)}
+                          rows={2}
+                          placeholder="Add a comment..."
+                          className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:border-modra-500 focus:ring-2 focus:ring-modra-100 outline-none text-sm resize-none"
+                        />
+                        <button
+                          type="submit"
+                          className="px-4 py-2 rounded-lg bg-modra-500 hover:bg-modra-600 text-white text-sm font-semibold transition-colors"
+                        >
+                          Post comment
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                );
+              })()}
+            </article>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

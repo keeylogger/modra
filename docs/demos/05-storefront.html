@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Storefront | Modra demo</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: {
+        modra: { 50: '#ecf9ef', 100: '#d3f1d8', 500: '#3FB456', 600: '#2E9D43', 700: '#155E2B' },
+        ember: { 100: '#fde2e4', 500: '#E5394A', 600: '#C72436' },
+      }}},
+    };
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    html, body { background: #f6f7f9; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+    .demo-eyebrow { font-feature-settings: "cv11", "ss01"; }
+    .toast-in { animation: toast .25s ease-out both; }
+    @keyframes toast { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body class="min-h-screen p-6 antialiased text-slate-800">
+  <div id="root"></div>
+
+  <script type="text/babel" data-presets="react">
+    const { useState, useMemo } = React;
+
+    // Modra: DB.Products
+    const PRODUCTS = [
+      { ID: "p-001", Name: "Modra T-Shirt",     Description: "100% cotton, hex tile print",     Price: 24, Stock: 50, Emoji: "👕" },
+      { ID: "p-002", Name: "Modra Mug",         Description: "Stainless steel, holds 12oz",     Price: 18, Stock: 80, Emoji: "☕" },
+      { ID: "p-003", Name: "Modra Sticker Set", Description: "12 hex stickers, weatherproof",   Price:  8, Stock: 200, Emoji: "✨" },
+      { ID: "p-004", Name: "Modra Hoodie",      Description: "Heavyweight fleece, embroidered", Price: 64, Stock: 30, Emoji: "🧥" },
+      { ID: "p-005", Name: "Modra Notebook",    Description: "Dotted, 192 pages, hardback",      Price: 14, Stock: 120, Emoji: "📓" },
+      { ID: "p-006", Name: "Modra Cap",         Description: "Adjustable, hex tile embroidery",  Price: 22, Stock: 60, Emoji: "🧢" },
+    ];
+    const fakeUUID = () =>
+      "o-" + Math.random().toString(16).slice(2, 6) + Math.random().toString(16).slice(2, 6);
+
+    function App() {
+      const [cart, setCart] = useState([]); // [{ ProductID, Quantity, UnitPrice }]
+      const [toast, setToast] = useState(null);
+
+      const showToast = (msg) => {
+        setToast(msg);
+        setTimeout(() => setToast(null), 2000);
+      };
+
+      const addToCart = (p) => {
+        setCart(prev => {
+          const ex = prev.find(l => l.ProductID === p.ID);
+          if (ex) return prev.map(l => l.ProductID === p.ID ? { ...l, Quantity: l.Quantity + 1 } : l);
+          return [...prev, { ProductID: p.ID, Quantity: 1, UnitPrice: p.Price }];
+        });
+        showToast("Added to cart");
+      };
+      const bump = (id, delta) => {
+        setCart(prev => prev
+          .map(l => l.ProductID === id ? { ...l, Quantity: l.Quantity + delta } : l)
+          .filter(l => l.Quantity > 0));
+      };
+      const remove = (id) => setCart(prev => prev.filter(l => l.ProductID !== id));
+
+      // Modra: lines.Sum(line.UnitPrice * line.Quantity)
+      const total = useMemo(
+        () => cart.reduce((sum, l) => sum + l.UnitPrice * l.Quantity, 0),
+        [cart],
+      );
+      const count = useMemo(() => cart.reduce((n, l) => n + l.Quantity, 0), [cart]);
+
+      // Modra: Checkout(customerId, lines) -> Insert order + lines
+      const placeOrder = () => {
+        if (cart.length === 0) return;
+        const id = fakeUUID();
+        showToast("Order " + id + " placed!");
+        setCart([]);
+      };
+
+      const productOf = (id) => PRODUCTS.find(p => p.ID === id);
+
+      return (
+        <div className="max-w-6xl mx-auto relative">
+          <div className="demo-eyebrow flex items-center gap-2 mb-3 text-[10px] uppercase tracking-[0.18em] font-bold text-modra-700">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-modra-500 animate-pulse"></span>
+            Modra runtime | Storefront x Cart x Checkout
+          </div>
+
+          <header className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold text-slate-900">Modra Store</h1>
+            <div className="text-sm text-slate-600">
+              <span className="tabular-nums font-bold text-modra-700">{count}</span> in cart &middot;
+              <span className="ml-1 tabular-nums font-bold text-slate-900">${total}</span>
+            </div>
+          </header>
+
+          <div className="grid lg:grid-cols-5 gap-4">
+            {/* ── Products grid ── */}
+            <section className="lg:col-span-3 grid sm:grid-cols-2 gap-3">
+              {PRODUCTS.map(p => (
+                <div key={p.ID} className="rounded-2xl bg-white border border-slate-200 shadow-sm p-4 flex flex-col">
+                  <div className="text-4xl mb-2">{p.Emoji}</div>
+                  <div className="font-semibold text-slate-900">{p.Name}</div>
+                  <div className="text-xs text-slate-500 flex-1">{p.Description}</div>
+                  <div className="mt-3 flex items-center justify-between">
+                    <div>
+                      <div className="font-bold text-slate-900 tabular-nums">${p.Price}</div>
+                      <div className="text-[10px] text-slate-400 uppercase tracking-wider">{p.Stock} in stock</div>
+                    </div>
+                    <button
+                      onClick={() => addToCart(p)}
+                      className="px-3 py-1.5 rounded-lg bg-modra-500 hover:bg-modra-600 text-white text-sm font-semibold transition-colors"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </section>
+
+            {/* ── Cart ── */}
+            <aside className="lg:col-span-2 rounded-2xl bg-white border border-slate-200 shadow-sm p-5 self-start">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Your cart</h2>
+              {cart.length === 0 ? (
+                <div className="py-8 text-center text-sm text-slate-400">Cart is empty.</div>
+              ) : (
+                <ul className="divide-y divide-slate-100 mb-4">
+                  {cart.map(l => {
+                    const p = productOf(l.ProductID);
+                    return (
+                      <li key={l.ProductID} className="py-3 flex items-center gap-3">
+                        <div className="text-2xl">{p.Emoji}</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-semibold text-slate-900 truncate">{p.Name}</div>
+                          <div className="text-xs text-slate-500 tabular-nums">${l.UnitPrice} each</div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => bump(l.ProductID, -1)} className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm">−</button>
+                          <span className="w-7 text-center text-sm font-semibold tabular-nums">{l.Quantity}</span>
+                          <button onClick={() => bump(l.ProductID, +1)} className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm">+</button>
+                          <button onClick={() => remove(l.ProductID)} className="ml-1 w-7 h-7 rounded-lg text-ember-500 hover:bg-ember-100 text-sm font-bold">×</button>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+
+              <div className="flex items-center justify-between text-sm border-t border-slate-100 pt-3">
+                <span className="text-slate-600">Total</span>
+                <span className="font-bold text-lg text-slate-900 tabular-nums">${total}</span>
+              </div>
+
+              <button
+                onClick={placeOrder}
+                disabled={cart.length === 0}
+                className="mt-3 w-full px-5 py-3 rounded-xl bg-modra-500 hover:bg-modra-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold text-sm transition-colors"
+              >
+                Place order
+              </button>
+            </aside>
+          </div>
+
+          {/* ── Show: Toast ── */}
+          {toast && (
+            <div className="fixed bottom-6 right-6 toast-in rounded-xl bg-slate-900 text-white px-4 py-2.5 text-sm font-semibold shadow-lg">
+              {toast}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

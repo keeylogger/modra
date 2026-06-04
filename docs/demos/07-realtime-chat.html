@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Realtime chat | Modra demo</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: {
+        modra: { 50: '#ecf9ef', 100: '#d3f1d8', 500: '#3FB456', 600: '#2E9D43', 700: '#155E2B' },
+        ember: { 100: '#fde2e4', 500: '#E5394A', 600: '#C72436' },
+      }}},
+    };
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    html, body { background: #f6f7f9; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+    .demo-eyebrow { font-feature-settings: "cv11", "ss01"; }
+    .msg-in { animation: in .25s ease-out both; }
+    @keyframes in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body class="min-h-screen p-6 antialiased text-slate-800">
+  <div id="root"></div>
+
+  <script type="text/babel" data-presets="react">
+    const { useState, useEffect, useRef, useMemo } = React;
+
+    // Modra: DB.Channels  (Channel ID is also the channel "Name")
+    const CHANNELS = [
+      { ID: "general",      Emoji: "💬", Hint: "Welcome to Modra" },
+      { ID: "engineering",  Emoji: "🛠️", Hint: "Compiler chatter" },
+      { ID: "random",       Emoji: "🎲", Hint: "Anything goes" },
+    ];
+    const ME = "you";
+
+    function seedFor(ch) {
+      const now = Date.now();
+      const ago = (s) => new Date(now - s * 1000).toISOString();
+      if (ch === "general") return [
+        { ID: "m1", ChannelID: "general", Author: "ada",    Body: "Hey, did anyone try the new playground build?", SentAt: ago(900) },
+        { ID: "m2", ChannelID: "general", Author: "linus",  Body: "Just merged it. It's fast.", SentAt: ago(840) },
+        { ID: "m3", ChannelID: "general", Author: "grace",  Body: "Loving the hex tile logo.", SentAt: ago(600) },
+      ];
+      if (ch === "engineering") return [
+        { ID: "m4", ChannelID: "engineering", Author: "ada",     Body: "The Array<X>: bug after blank lines is fixed.", SentAt: ago(1200) },
+        { ID: "m5", ChannelID: "engineering", Author: "margaret", Body: "Tests are green.", SentAt: ago(900) },
+      ];
+      return [
+        { ID: "m6", ChannelID: "random", Author: "linus", Body: "Coffee count today: 3.", SentAt: ago(300) },
+      ];
+    }
+
+    const fakeUUID = () =>
+      "m-" + Math.random().toString(16).slice(2, 6) + Math.random().toString(16).slice(2, 6);
+
+    const REPLIES = [
+      "Got it.", "Acknowledged.", "On it!", "Same here.", "Pushed.", "Looks good to me.",
+      "Modra <3", "+1 from me.", "Hex tiles forever.", "I just ran the demos — works clean.",
+    ];
+
+    function App() {
+      const [channelId, setChannelId] = useState("general");
+      const [history, setHistory] = useState({
+        general:     seedFor("general"),
+        engineering: seedFor("engineering"),
+        random:      seedFor("random"),
+      });
+      const [draft, setDraft] = useState("");
+      const scroller = useRef(null);
+
+      const messages = history[channelId] || [];
+
+      // Auto-scroll on new message
+      useEffect(() => {
+        if (scroller.current) scroller.current.scrollTop = scroller.current.scrollHeight;
+      }, [messages.length, channelId]);
+
+      const send = (e) => {
+        e?.preventDefault?.();
+        const body = draft.trim();
+        if (!body) return;
+        const msg = {
+          ID: fakeUUID(),
+          ChannelID: channelId,
+          Author: ME,
+          Body: body,
+          SentAt: new Date().toISOString(),
+        };
+        setHistory(prev => ({ ...prev, [channelId]: [...(prev[channelId] || []), msg] }));
+        setDraft("");
+
+        // Simulated other-user echo after a small delay
+        setTimeout(() => {
+          const author = ["ada", "linus", "grace"][Math.floor(Math.random() * 3)];
+          const reply = {
+            ID: fakeUUID(),
+            ChannelID: channelId,
+            Author: author,
+            Body: REPLIES[Math.floor(Math.random() * REPLIES.length)],
+            SentAt: new Date().toISOString(),
+          };
+          setHistory(prev => ({ ...prev, [channelId]: [...(prev[channelId] || []), reply] }));
+        }, 800 + Math.random() * 1200);
+      };
+
+      const fmt = (iso) => {
+        const d = new Date(iso);
+        return d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+      };
+
+      const totalAcross = useMemo(
+        () => Object.values(history).reduce((n, ms) => n + ms.length, 0),
+        [history],
+      );
+
+      return (
+        <div className="max-w-5xl mx-auto">
+          <div className="demo-eyebrow flex items-center gap-2 mb-3 text-[10px] uppercase tracking-[0.18em] font-bold text-modra-700">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-modra-500 animate-pulse"></span>
+            Modra runtime | Channels x Messages (polling endpoint)
+          </div>
+
+          <div className="grid md:grid-cols-5 gap-4">
+            {/* ── Channel rail ── */}
+            <aside className="md:col-span-1 rounded-2xl bg-white border border-slate-200 shadow-sm p-3">
+              <div className="text-[10px] uppercase tracking-[0.18em] font-bold text-slate-500 px-2 py-1 mb-1">
+                Channels
+              </div>
+              <ul className="space-y-1">
+                {CHANNELS.map(c => (
+                  <li key={c.ID}>
+                    <button
+                      onClick={() => setChannelId(c.ID)}
+                      className={
+                        "w-full text-left flex items-center gap-2 px-2.5 py-2 rounded-lg text-sm transition-colors " +
+                        (channelId === c.ID
+                          ? "bg-modra-50 text-modra-700 font-semibold"
+                          : "text-slate-700 hover:bg-slate-50")
+                      }
+                    >
+                      <span className="text-base leading-none">{c.Emoji}</span>
+                      <span className="font-mono">#{c.ID}</span>
+                      <span className="ml-auto text-[10px] text-slate-400 tabular-nums">{(history[c.ID] || []).length}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-4 px-2 text-[10px] text-slate-400">
+                {totalAcross} total messages
+              </div>
+            </aside>
+
+            {/* ── Conversation ── */}
+            <section className="md:col-span-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col h-[480px]">
+              <header className="border-b border-slate-100 px-5 py-3 flex items-baseline justify-between">
+                <div>
+                  <div className="font-mono text-sm font-bold text-slate-900">#{channelId}</div>
+                  <div className="text-[11px] text-slate-500">{CHANNELS.find(c => c.ID === channelId)?.Hint}</div>
+                </div>
+                <div className="text-[10px] uppercase tracking-[0.18em] font-bold text-slate-400">
+                  {messages.length} message(s)
+                </div>
+              </header>
+
+              <ul ref={scroller} className="flex-1 overflow-auto px-5 py-4 space-y-3">
+                {messages.map(m => {
+                  const mine = m.Author === ME;
+                  return (
+                    <li key={m.ID} className={"msg-in flex " + (mine ? "justify-end" : "justify-start")}>
+                      <div className={"max-w-[75%] " + (mine ? "items-end text-right" : "items-start")}>
+                        <div className="text-[11px] text-slate-500 mb-1">
+                          <span className="font-semibold text-slate-700">{m.Author}</span>
+                          <span className="ml-1.5">{fmt(m.SentAt)}</span>
+                        </div>
+                        <div
+                          className={
+                            "inline-block px-3.5 py-2 rounded-2xl text-sm " +
+                            (mine
+                              ? "bg-modra-500 text-white rounded-br-md"
+                              : "bg-slate-100 text-slate-800 rounded-bl-md")
+                          }
+                        >
+                          {m.Body}
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              <form onSubmit={send} className="border-t border-slate-100 px-3 py-3 flex gap-2">
+                <input
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  placeholder={"Say something in #" + channelId}
+                  className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-modra-500 focus:ring-2 focus:ring-modra-100 outline-none text-sm"
+                />
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-modra-500 hover:bg-modra-600 text-white font-semibold text-sm transition-colors"
+                >
+                  Send
+                </button>
+              </form>
+            </section>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

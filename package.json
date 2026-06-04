@@ -23,6 +23,7 @@
     "parse": "tsx src/cli.ts parse",
     "docs": "node ./scripts/bundle-docs.mjs",
     "docs:verify": "node ./scripts/verify-docs.mjs",
+    "docs:examples": "node ./scripts/build-examples-section.mjs",
     "examples:verify": "node ./scripts/verify-examples.mjs",
     "assets": "node ./scripts/build-assets.mjs",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\""

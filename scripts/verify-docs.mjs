@@ -121,6 +121,24 @@ while ((mdMatch = mdRe.exec(md))) {
 }
 if (!mdBad) ok(`all ${mdIdx} README.md Modra blocks parse cleanly`);
 
+// ─── Every <iframe src="./docs/demos/...html"> must point at a real file
+console.log("\nVerifying every example demo iframe resolves to a file …");
+const iframeRe = /<iframe[^>]*\bsrc="(\.\/docs\/demos\/[^"]+\.html)"/g;
+const seenDemos = new Set();
+let im;
+while ((im = iframeRe.exec(html))) {
+  const rel = im[1];
+  if (seenDemos.has(rel)) continue;
+  seenDemos.add(rel);
+  try {
+    const stat = statSync(resolve(root, rel.replace(/^\.\//, "")));
+    ok(`${rel} (${(stat.size / 1024).toFixed(1)} KB)`);
+  } catch {
+    bad(`${rel} not found on disk`);
+  }
+}
+if (seenDemos.size === 0) bad("Expected at least one demo iframe in README.html");
+
 // ─── No raw HTML inside <code> blocks ─────────────────────────
 // Raw `<X>` tags inside a code block get parsed as real DOM elements by
 // the browser, which corrupts surrounding sections (this exact bug took

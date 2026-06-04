@@ -9,6 +9,14 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Added
 - Brand identity (green hex panels + faceted red M logo, full asset pipeline).
 - Public single-file documentation site (`README.html`) with live playground.
+- **Live, interactive demos for every example app.** Each of the eight
+  `examples/*.modra` files now has a paired React + Tailwind preview at
+  `docs/demos/<n>-<name>.html`, embedded inside the
+  `#/examples` page as a sandboxed iframe (`source ↔ running app`).
+- `npm run docs:examples` regenerates the `#/examples` section in
+  `README.html` from the `examples/` source of truth.
+- `scripts/verify-docs.mjs` now also checks that every `<iframe>` in the
+  examples page resolves to a real file on disk.
 
 ## [1.0.0] - 2026-06-03
 

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard | Modra demo</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: {
+        modra: { 50: '#ecf9ef', 100: '#d3f1d8', 500: '#3FB456', 600: '#2E9D43', 700: '#155E2B' },
+        ember: { 100: '#fde2e4', 500: '#E5394A', 600: '#C72436' },
+      }}},
+    };
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    html, body { background: #f6f7f9; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+    .demo-eyebrow { font-feature-settings: "cv11", "ss01"; }
+  </style>
+</head>
+<body class="min-h-screen p-6 antialiased text-slate-800">
+  <div id="root"></div>
+
+  <script type="text/babel" data-presets="react">
+    const { useMemo, useState } = React;
+
+    // Deterministic PRNG so the dashboard looks alive but stable between renders.
+    function mulberry32(a) {
+      return function () {
+        let t = (a += 0x6D2B79F5);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    // What Modra would compute via:
+    //   EventsLastDays(days), TopEventKinds(days), NewUsers(days)
+    const KINDS = ["page_view", "signup", "purchase", "compile", "deploy", "login", "error"];
+    function dataFor(windowDays) {
+      const rand = mulberry32(0xC0DE + windowDays * 31);
+      // total events ~ proportional to window
+      const eventsTotal = Math.round(120 * windowDays * (0.85 + rand() * 0.3));
+      // top kinds: distribute across categories
+      const weights = KINDS.map(() => 1 + rand() * 9);
+      const sum = weights.reduce((s, w) => s + w, 0);
+      const top = KINDS
+        .map((k, i) => ({ Kind: k, count: Math.round(eventsTotal * weights[i] / sum) }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+      const newUsers = Math.round(8 * windowDays * (0.6 + rand() * 0.8));
+      // a tiny daily sparkline for "events per day"
+      const series = Array.from({ length: windowDays }, (_, i) => {
+        const r = mulberry32(0xBEEF + i * 17 + windowDays);
+        return Math.round(80 + r() * 220);
+      });
+      return { eventsTotal, top, newUsers, series };
+    }
+
+    function App() {
+      const [windowDays, setWindowDays] = useState(7);
+      const { eventsTotal, top, newUsers, series } = useMemo(() => dataFor(windowDays), [windowDays]);
+      const maxKind = Math.max(...top.map(t => t.count));
+      const maxDay  = Math.max(...series);
+
+      return (
+        <div className="max-w-5xl mx-auto">
+          <div className="demo-eyebrow flex items-center gap-2 mb-3 text-[10px] uppercase tracking-[0.18em] font-bold text-modra-700">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-modra-500 animate-pulse"></span>
+            Modra runtime | Endpoints x KPIs x Time-windowed queries
+          </div>
+
+          {/* ── Header & window switcher ── */}
+          <header className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+              <p className="text-xs text-slate-500 mt-0.5">Last {windowDays} days &middot; events queried via <code className="bg-slate-100 px-1.5 py-0.5 rounded">EventsLastDays(Window)</code></p>
+            </div>
+            <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
+              {[7, 14, 30].map(d => (
+                <button
+                  key={d}
+                  onClick={() => setWindowDays(d)}
+                  className={
+                    "px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors " +
+                    (windowDays === d ? "bg-modra-500 text-white" : "text-slate-600 hover:bg-slate-100")
+                  }
+                >
+                  {d}d
+                </button>
+              ))}
+            </div>
+          </header>
+
+          {/* ── KPI cards ── */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+            <Kpi label="Events" value={eventsTotal} accent="modra" />
+            <Kpi label="New users" value={newUsers} accent="ember" />
+            <Kpi label="Top kind" value={top[0]?.Kind ?? "-"} small accent="slate" />
+          </div>
+
+          <div className="grid md:grid-cols-5 gap-4">
+            {/* ── Daily events sparkline ── */}
+            <div className="md:col-span-3 rounded-2xl bg-white border border-slate-200 shadow-sm p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">Events per day</h2>
+                <span className="text-[11px] text-slate-400 tabular-nums">peak {maxDay}</span>
+              </div>
+              <div className="flex items-end gap-1 h-32">
+                {series.map((v, i) => (
+                  <div
+                    key={i}
+                    className="flex-1 bg-modra-100 hover:bg-modra-500 rounded-t transition-colors"
+                    style={{ height: ((v / maxDay) * 100) + "%" }}
+                    title={"Day " + (i + 1) + ": " + v + " events"}
+                  />
+                ))}
+              </div>
+              <div className="mt-2 flex justify-between text-[10px] text-slate-400 tabular-nums">
+                <span>day 1</span>
+                <span>day {series.length}</span>
+              </div>
+            </div>
+
+            {/* ── Top kinds ── */}
+            <div className="md:col-span-2 rounded-2xl bg-white border border-slate-200 shadow-sm p-5">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Top event kinds</h2>
+              <ul className="space-y-2.5">
+                {top.map(row => (
+                  <li key={row.Kind}>
+                    <div className="flex items-center justify-between text-xs font-semibold text-slate-700 mb-1">
+                      <span className="font-mono">{row.Kind}</span>
+                      <span className="tabular-nums text-slate-500">{row.count}</span>
+                    </div>
+                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-modra-500 rounded-full transition-all"
+                        style={{ width: ((row.count / maxKind) * 100) + "%" }}
+                      />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-4 text-xs text-slate-400">
+            <code className="bg-slate-100 px-1.5 py-0.5 rounded">GroupBy(Kind).Select(Kind, count: Count())</code> and
+            <code className="ml-1 bg-slate-100 px-1.5 py-0.5 rounded">OrderBy(count, descending: true).Take(5)</code> happen on the server.
+          </div>
+        </div>
+      );
+    }
+
+    function Kpi({ label, value, small, accent }) {
+      const accents = {
+        modra: "text-modra-700 bg-modra-50 border-modra-100",
+        ember: "text-ember-600 bg-ember-100 border-ember-100",
+        slate: "text-slate-700 bg-slate-50 border-slate-100",
+      };
+      return (
+        <div className={"rounded-2xl border shadow-sm p-5 " + (accents[accent] || accents.modra)}>
+          <div className="text-[10px] uppercase tracking-[0.18em] font-bold opacity-70">{label}</div>
+          <div className={(small ? "text-xl" : "text-3xl") + " font-extrabold mt-1 tabular-nums"}>{value.toLocaleString?.() ?? value}</div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

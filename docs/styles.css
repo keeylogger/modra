@@ -39,17 +39,19 @@
   --mono: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, "Cascadia Mono", Consolas, monospace;
   --ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
-  /* Syntax colors (dark) */
-  --syn-keyword: #7BD389;
-  --syn-type: #5EE0A4;
-  --syn-string: #fbbf24;
-  --syn-number: #F87171;
-  --syn-comment: #5a6c5e;
-  --syn-punct: #94a3b8;
-  --syn-ident: #e8f0e9;
-  --syn-operator: #E63946;
-  --syn-directive: #3FB456;
-  --syn-tag: #facc15;
+  /* Syntax colours (dark) — every token role gets a visually distinct
+     hue so reading code at a glance is easy. Tuned for AA contrast on
+     the --bg-code surface (#0c1a14). */
+  --syn-keyword:   #C792EA; /* purple   — return, if, using, async, etc.   */
+  --syn-type:      #82AAFF; /* blue     — Number, String, Component, etc. */
+  --syn-string:    #A5E075; /* green    — string literals                  */
+  --syn-number:    #F78C6C; /* orange   — numbers, hex colours             */
+  --syn-comment:   #6A7886; /* grey     — comments (italic)                */
+  --syn-punct:     #B7C5CC; /* light    — parens, commas, semicolons       */
+  --syn-ident:     #ECEFF4; /* near-white — variable / property names      */
+  --syn-operator:  #FF7B95; /* pink     — <-, ->, ::, etc.                 */
+  --syn-directive: #FFD166; /* amber    — @@target, @Decorators            */
+  --syn-tag:       #56CFD7; /* cyan     — UI tag names (form, Submit…)     */
 }
 
 [data-theme="light"] {
@@ -75,16 +77,18 @@
   --shadow-md: 0 8px 24px rgba(10,20,16,0.08);
   --shadow-lg: 0 20px 60px rgba(10,20,16,0.12);
 
-  --syn-keyword: #155E2B;
-  --syn-type: #0F4A22;
-  --syn-string: #b45309;
-  --syn-number: #B91C1C;
-  --syn-comment: #8a978f;
-  --syn-punct: #5a6c5e;
-  --syn-ident: #0a1410;
-  --syn-operator: #B91C1C;
-  --syn-directive: #2E9D43;
-  --syn-tag: #ca8a04;
+  /* Syntax colours (light) — same hue family as dark, dimmed to keep
+     AA contrast on the lighter code surface (#f9fbfa). */
+  --syn-keyword:   #7C3AED; /* purple   */
+  --syn-type:      #1D4ED8; /* blue     */
+  --syn-string:    #15803D; /* green    */
+  --syn-number:    #C2410C; /* orange   */
+  --syn-comment:   #6B7280; /* grey     */
+  --syn-punct:     #475569; /* light    */
+  --syn-ident:     #0a1410; /* dark     */
+  --syn-operator:  #BE185D; /* pink     */
+  --syn-directive: #B45309; /* amber    */
+  --syn-tag:       #0E7490; /* cyan     */
 }
 
 /* ─── Reset ─────────────────────────────────────────────────── */
@@ -271,6 +275,13 @@ button { font: inherit; cursor: pointer; }
   width: 100%;
   margin: 0 auto;
 }
+/* The playground needs more room than the reading width allows. The
+   router adds `.content--wide` when the playground route is active. */
+.content.content--wide {
+  max-width: 1440px;
+  padding-left: 36px;
+  padding-right: 36px;
+}
 
 /* ─── Typography ────────────────────────────────────────────── */
 h1, h2, h3, h4, h5 {
@@ -352,9 +363,9 @@ pre code { background: none; padding: 0; border: 0; color: inherit; font-size: i
 .tok-directive{ color: var(--syn-directive); font-weight: 600; }
 .tok-tag      { color: var(--syn-tag); }
 
-/* Comparison highlighters (loose) */
-.tok-builtin  { color: var(--syn-type); }
-.tok-fn       { color: var(--syn-tag); }
+/* Comparison-page highlighters (loose) */
+.tok-builtin  { color: var(--syn-tag); }
+.tok-fn       { color: var(--syn-directive); }
 
 /* ─── Hero ──────────────────────────────────────────────────── */
 .hero {
@@ -506,10 +517,16 @@ td code { white-space: nowrap; }
 /* ─── Playground ────────────────────────────────────────────── */
 .playground {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  height: calc(100vh - 220px);
-  min-height: 520px;
+  /* Slight asymmetry: output gets a touch more room because emitted
+     code is usually wider than the source. min-width: 0 lets the grid
+     children actually shrink instead of overflowing horizontally. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: 18px;
+  /* Reserve less of the viewport — feels less cramped, and the user
+     can still see the editor + the first chunk of output without
+     scrolling the page. */
+  height: clamp(560px, calc(100vh - 200px), 820px);
+  min-height: 560px;
 }
 .pg-pane {
   background: var(--bg-elev);
@@ -518,6 +535,7 @@ td code { white-space: nowrap; }
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0; /* prevents children from forcing horizontal overflow */
 }
 .pg-head {
   display: flex;
@@ -580,24 +598,27 @@ td code { white-space: nowrap; }
   background: var(--bg-elev-2);
 }
 .pg-tab {
-  padding: 9px 14px;
-  font-size: 12.5px;
+  padding: 9px 12px;
+  font-size: 12px;
   font-weight: 600;
+  letter-spacing: 0.01em;
   color: var(--text-dim);
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
   white-space: nowrap;
+  flex-shrink: 0;
 }
+.pg-tab:hover { color: var(--text); }
 .pg-tab.active { color: var(--text); border-bottom-color: var(--primary); }
 .pg-result {
   flex: 1;
   overflow: auto;
   font-family: var(--mono);
   font-size: 12.5px;
-  line-height: 1.55;
-  padding: 14px 16px;
+  line-height: 1.6;
+  padding: 16px 18px;
   background: var(--bg-code);
   white-space: pre;
   color: var(--text);

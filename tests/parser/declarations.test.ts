@@ -112,6 +112,22 @@ describe("Top-level declarations", () => {
     expect(decl.labelGenerics[1]!.generics).toHaveLength(1);
   });
 
+  it("parses a generic-typed declaration that follows blank lines", () => {
+    // Regression: blank lines preceding a generic top-level declaration
+    // used to leave the cursor sitting on Newline tokens, causing
+    // `isGenericLabelAhead` to short-circuit on the first newline it
+    // saw (instead of skipping past them to find the actual generic).
+    const ast = parseOk(
+      "// header comment\n\n\nArray<String>: Items <- []\nNumber: Count <- 0\n",
+    );
+    expect(ast.declarations).toHaveLength(2);
+    const first = ast.declarations[0]!;
+    if (first.kind !== "ElementDecl") throw new Error("type guard");
+    expect(first.label.name).toBe("Array");
+    expect(first.labelGenerics).toHaveLength(1);
+    expect(first.labelGenerics[0]!.name.name).toBe("String");
+  });
+
   it("preserves declaration order in the file node", () => {
     const ast = parseOk(`
       Number: A <- 1

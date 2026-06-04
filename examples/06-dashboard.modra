@@ -1,0 +1,65 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// 06 · Admin dashboard
+// Demonstrates: multiple endpoints, time-windowed queries, derived KPIs,
+// and a compact UI built from primitives.
+// ─────────────────────────────────────────────────────────────────────────────
+
+using Backend.Database as DB
+
+Database: Postgres -> (
+  Table: Events -> (
+    String:   ID        @Primary
+    String:   Kind
+    String:   UserID
+    DateTime: At        @Indexed
+  )
+
+  Table: Users -> (
+    String:   ID         @Primary
+    String:   Email      @Unique
+    DateTime: CreatedAt
+  )
+)
+
+Endpoint: EventsLastDays(days: Number) -> (
+  DateTime: since <- Now() - Days(days)
+  Array<Object>: rows <- DB.Events.Where(At: { greaterThan: since })
+  Return: rows
+)
+
+Endpoint: TopEventKinds(days: Number) -> (
+  DateTime: since <- Now() - Days(days)
+  Array<Object>: rows <- DB.Events
+    .Where(At: { greaterThan: since })
+    .GroupBy(Kind)
+    .Select(Kind, count: Count())
+    .OrderBy(count, descending: true)
+    .Take(5)
+  Return: rows
+)
+
+Endpoint: NewUsers(days: Number) -> (
+  DateTime: since <- Now() - Days(days)
+  Number: count <- DB.Users.Where(CreatedAt: { greaterThan: since }).Count()
+  Return: count
+)
+
+Component: Dashboard -> (
+  Number: Window <- 7
+  Array<Object>: AllEvents <- EventsLastDays(Window)
+  Array<Object>: TopKinds  <- TopEventKinds(Window)
+  Number:        NewUserCount <- NewUsers(Window)
+
+  Text: Title         <- "Dashboard - last " + Window + " day(s)"
+  Text: TotalEvents   <- "Events: " + AllEvents.length
+  Text: TotalNewUsers <- "New users: " + NewUserCount
+
+  forEach row in TopKinds -> (
+    Text: KindRow (row.Kind + ": " + row.count)
+  )
+
+  form (
+    InputField::Window  placeholder: "Window in days"
+    Submit              label: "Refresh"
+  )
+)

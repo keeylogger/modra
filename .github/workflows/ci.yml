@@ -41,3 +41,6 @@ jobs:
 
       - name: Verify docs
         run: npm run docs:verify
+
+      - name: Verify Modra example apps parse
+        run: npm run examples:verify

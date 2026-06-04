@@ -538,6 +538,11 @@ Try each in the [live playground](https://keeylogger.github.io/modra/README.html
 Each example also lives in the [online docs](https://keeylogger.github.io/modra/README.html#/examples). The
 playground recompiles them in your browser on every keystroke.
 
+Eight progressively-larger, hand-written reference apps also live under
+[`examples/`](./examples/) in this repository — counter → todo → registration
+→ blog → storefront → dashboard → realtime chat → native bridges. CI runs
+the real Modra compiler against every one of them on every push.
+
 ---
 
 ## 🩺 Diagnostics

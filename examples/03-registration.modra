@@ -1,0 +1,43 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// 03 · Registration (full-stack in one file)
+// Demonstrates: Postgres schema, server endpoint, password hashing,
+// uniqueness constraint, and a 3-field client form that calls the server
+// directly (Modra auto-bridges the RPC).
+// ─────────────────────────────────────────────────────────────────────────────
+
+using Backend.Database as DB
+using Backend.Crypto    as Crypto
+
+Database: Postgres -> (
+  Table: Users -> (
+    String:   ID            @Primary
+    String:   Name
+    String:   Email         @Unique
+    String:   PasswordHash
+    DateTime: CreatedAt     @Default(Now)
+  )
+)
+
+Endpoint: Register(name: String, email: String, password: String) -> (
+  Record: u <- DB.Users.Insert(
+    ID:           UUID(),
+    Name:         name,
+    Email:        email,
+    PasswordHash: Crypto.Hash(password),
+  )
+  Return: u.ID
+)
+
+Component: RegistrationForm -> (
+  String: Status <- ""
+
+  form (
+    InputField::Name      placeholder: "Full name"
+    InputField::Email     placeholder: "Email address"
+    InputField::Password  placeholder: "Password"
+    Submit                label: "Create account"
+                          Click -> Register(Name, Email, Password)
+  )
+
+  Text: StatusLine <- Status
+)

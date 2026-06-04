@@ -1,0 +1,64 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// 04 · Tiny blog
+// Demonstrates: multiple related tables, query endpoints, server-driven list,
+// derived counts, and conditional rendering.
+// ─────────────────────────────────────────────────────────────────────────────
+
+using Backend.Database as DB
+
+Database: Postgres -> (
+  Table: Authors -> (
+    String:   ID    @Primary
+    String:   Name
+    String:   Email @Unique
+  )
+
+  Table: Posts -> (
+    String:   ID         @Primary
+    String:   AuthorID   @References(Authors.ID)
+    String:   Title
+    String:   Body
+    DateTime: PublishedAt
+  )
+
+  Table: Comments -> (
+    String:   ID       @Primary
+    String:   PostID   @References(Posts.ID)
+    String:   Author
+    String:   Body
+    DateTime: PostedAt @Default(Now)
+  )
+)
+
+Endpoint: LatestPosts(limit: Number) -> (
+  Array<Object>: rows <- DB.Posts
+    .OrderBy(PublishedAt, descending: true)
+    .Take(limit)
+  Return: rows
+)
+
+Endpoint: PostWithComments(id: String) -> (
+  Record: post           <- DB.Posts.Find(id)
+  Array<Object>: comments <- DB.Comments.Where(PostID: id)
+  Return: { Post: post, Comments: comments }
+)
+
+Endpoint: AddComment(postId: String, author: String, body: String) -> (
+  Record: c <- DB.Comments.Insert(
+    ID:     UUID(),
+    PostID: postId,
+    Author: author,
+    Body:   body,
+  )
+  Return: c
+)
+
+Component: Feed -> (
+  Array<Object>: Posts <- LatestPosts(10)
+  Text: Heading <- "Latest posts (" + Posts.length + ")"
+
+  forEach post in Posts -> (
+    Text: Title <- post.Title
+    Text: Body  <- post.Body
+  )
+)

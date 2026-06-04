@@ -23,7 +23,12 @@
   const menuToggle = $("#menu-toggle");
   const themeToggle = $("#theme-toggle");
   const themeIcon = $("#theme-icon");
+  const content = $("#content");
   const html = document.documentElement;
+
+  // Routes that benefit from a wider content column (overrides the
+  // default ~980px reading width set by `.content`).
+  const WIDE_ROUTES = new Set(["#/playground"]);
 
   // ─── Theme ──────────────────────────────────────────────────
   function applyTheme(t) {
@@ -57,6 +62,10 @@
     });
     crumb.textContent = active.dataset.title || "Docs";
     document.title = (active.dataset.title ? active.dataset.title + " · " : "") + "Modra";
+
+    if (content) {
+      content.classList.toggle("content--wide", WIDE_ROUTES.has(active.dataset.route));
+    }
 
     window.scrollTo({ top: 0, behavior: "auto" });
 

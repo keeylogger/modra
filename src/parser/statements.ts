@@ -540,10 +540,21 @@ export function parseElementDecl(
  * itself; we auto-detect by inspecting peek(0).
  */
 export function isGenericLabelAhead(cur: TokenCursor): boolean {
-  const first = cur.peek();
-  const startOffset = first.type === TokenType.LessThan ? 0 : 1;
+  // `peek()` skips Newline tokens but `peekRaw(i)` indexes from the
+  // cursor's raw position — which can still be sitting on a Newline (or
+  // a run of them) when this function is called right after one or more
+  // blank lines. Find the raw offset of the first significant token so
+  // the depth-tracking loop below indexes from the actual identifier
+  // (or `<`) instead of stray leading newlines.
+  let base = 0;
+  while (cur.peekRaw(base).type === TokenType.Newline) {
+    base++;
+    if (base > 32) return false; // sanity bound
+  }
+  const first = cur.peekRaw(base);
+  const startOffset = first.type === TokenType.LessThan ? base : base + 1;
   let depth = 0;
-  for (let i = startOffset; i < 64; i++) {
+  for (let i = startOffset; i < startOffset + 64; i++) {
     const t = cur.peekRaw(i);
     if (t.type === TokenType.Eof || t.type === TokenType.Newline) return false;
     if (t.type === TokenType.LessThan) depth++;

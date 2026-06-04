@@ -1,0 +1,51 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Line-ending normalisation
+# ─────────────────────────────────────────────────────────────────────────────
+*           text=auto
+*.modra     text eol=lf
+*.ts        text eol=lf
+*.tsx       text eol=lf
+*.js        text eol=lf
+*.mjs       text eol=lf
+*.json      text eol=lf
+*.md        text eol=lf
+*.html      text eol=lf
+*.css       text eol=lf
+*.yml       text eol=lf
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GitHub Linguist
+#
+# `.modra` is the Modra source extension. Linguist doesn't ship a grammar
+# for it (yet — that needs a PR against github/linguist), so:
+#   1. `linguist-detectable=true` forces it into the language-bar stats;
+#      without this it would silently disappear because the extension is
+#      unrecognised.
+#   2. `linguist-language=…` would normally also point at a real Linguist
+#      language so the colour swatch lines up; we DON'T set it, because
+#      we'd rather show as "Other" honestly than mislabel ourselves.
+# ─────────────────────────────────────────────────────────────────────────────
+*.modra                    linguist-detectable=true
+
+# The browser-bundled compiler is generated; mark it as such so it doesn't
+# inflate the TypeScript / JavaScript share.
+docs/modra-bundle.js       linguist-generated=true
+
+# The docs site (rendered HTML, custom CSS, hand-rolled router and
+# highlighter) is documentation, not application code.
+docs/*.css                 linguist-documentation=true
+docs/*.js                  linguist-documentation=true
+docs/*.svg                 linguist-vendored=true
+README.html                linguist-documentation=true
+index.html                 linguist-documentation=true
+
+# Brand / image assets aren't code.
+assets/**                  linguist-vendored=true
+
+# Helper scripts that aren't the language itself.
+scripts/**                 linguist-documentation=true
+
+# Generated emit output, if ever committed by accident.
+dist/**                    linguist-generated=true
+build/**                   linguist-generated=true
+out/**                     linguist-generated=true

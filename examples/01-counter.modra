@@ -1,0 +1,21 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// 01 · Counter
+// Reactive state + actions in 13 lines. No imports, no boilerplate.
+// Build:  modra build examples/01-counter.modra -o ./out
+// ─────────────────────────────────────────────────────────────────────────────
+
+Number: Count <- 0
+
+Action: Increment -> ( Count <- Count + 1 )
+Action: Decrement -> ( Count <- Count - 1 )
+Action: Reset     -> ( Count <- 0 )
+
+Component: Counter -> (
+  Text: Display <- "Count is " + Count
+
+  form (
+    Submit label: "−"      Click -> Decrement
+    Submit label: "Reset"  Click -> Reset
+    Submit label: "+"      Click -> Increment
+  )
+)

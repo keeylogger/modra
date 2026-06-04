@@ -1,0 +1,33 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// 02 · Todo list
+// Demonstrates: array state, list mutation, derived text, two-way input
+// binding via InputField::, and forEach rendering.
+// ─────────────────────────────────────────────────────────────────────────────
+
+Array<String>: Items <- []
+String: Draft <- ""
+
+Action: Add -> (
+  Items <- Items + [Draft]
+  Draft <- ""
+)
+
+Action: Clear -> ( Items <- [] )
+
+Action: RemoveAt(index: Number) -> (
+  Items <- Items.WithoutAt(index)
+)
+
+Component: TodoBoard -> (
+  Text: Header <- "You have " + Items.length + " item(s)"
+
+  form (
+    InputField::Draft  placeholder: "What needs doing?"
+    Submit             label: "Add"    Click -> Add
+    Submit             label: "Clear"  Click -> Clear
+  )
+
+  forEach item in Items -> (
+    Text: Row (item)
+  )
+)

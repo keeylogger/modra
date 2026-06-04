@@ -1,0 +1,90 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// 05 · Storefront with cart and checkout
+// Demonstrates: a fuller real-world app — products list, cart state,
+// checkout endpoint that wraps several DB ops, and notifications.
+// ─────────────────────────────────────────────────────────────────────────────
+
+using Backend.Database as DB
+
+Database: Postgres -> (
+  Table: Products -> (
+    String: ID          @Primary
+    String: Name        @Indexed
+    String: Description
+    Number: Price
+    Number: Stock
+  )
+
+  Table: Orders -> (
+    String:   ID         @Primary
+    String:   CustomerID
+    DateTime: PlacedAt   @Default(Now)
+    Number:   Total
+  )
+
+  Table: OrderLines -> (
+    String: ID        @Primary
+    String: OrderID   @References(Orders.ID)
+    String: ProductID @References(Products.ID)
+    Number: Quantity
+    Number: UnitPrice
+  )
+)
+
+Endpoint: LoadProducts -> (
+  Array<Object>: rows <- DB.Products
+    .Where(Stock: { greaterThan: 0 })
+    .OrderBy(Name)
+  Return: rows
+)
+
+Endpoint: Checkout(customerId: String, lines: Array<Object>) -> (
+  Number: total <- lines.Sum(line.UnitPrice * line.Quantity)
+  Record: order <- DB.Orders.Insert(
+    ID:         UUID(),
+    CustomerID: customerId,
+    Total:      total,
+  )
+  forEach line in lines -> (
+    DB.OrderLines.Insert(
+      ID:        UUID(),
+      OrderID:   order.ID,
+      ProductID: line.ProductID,
+      Quantity:  line.Quantity,
+      UnitPrice: line.UnitPrice,
+    )
+  )
+  Return: order.ID
+)
+
+Component: Storefront -> (
+  Array<Object>: Items <- LoadProducts()
+  Array<Object>: Cart  <- []
+  String: CustomerID   <- "guest"
+
+  Action: AddToCart(productId: String, price: Number) -> (
+    Cart <- Cart + [{
+      ProductID: productId,
+      Quantity:  1,
+      UnitPrice: price,
+    }]
+    Show: Toast("Added to cart")
+  )
+
+  Action: PlaceOrder -> (
+    String: orderId <- Checkout(CustomerID, Cart)
+    Show: Toast("Order " + orderId + " placed!")
+    Cart <- []
+  )
+
+  Text: Header  <- "Modra Store"
+  Text: Summary <- Cart.length + " item(s) - $" + Cart.Sum(item.UnitPrice * item.Quantity)
+
+  forEach p in Items -> (
+    Text: Row (p.Name + " - $" + p.Price)
+  )
+
+  form (
+    Submit label: "Place order"  Click -> PlaceOrder
+  )
+)

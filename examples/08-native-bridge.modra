@@ -1,0 +1,53 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// 08 · Native bridges
+// Modra is fluent about escape hatches. When a problem is better solved in
+// another language, drop into a `Native<Lang> { … }` block. The compiler
+// generates the wiring (subprocess, child_process, FFI) automatically.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Classify a piece of text with a Python HuggingFace pipeline.
+Action: Classify(text: String) -> (
+  Native<Python>(in: text; out: label) {
+    from transformers import pipeline
+    classifier = pipeline("sentiment-analysis")
+    label = classifier(text)[0]["label"]
+  }
+)
+
+// Generate a slug with a tiny TypeScript helper.
+Action: Slugify(title: String) -> (
+  Native<TypeScript>(in: title; out: slug) {
+    slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  }
+)
+
+// Read a system metric with a one-line shell call.
+Action: ReadUptime -> (
+  Native<Bash>(out: uptime) {
+    uptime=$(awk '{print $1}' /proc/uptime)
+  }
+)
+
+Component: BridgeDemo -> (
+  String: Text       <- "I love Modra"
+  String: Title      <- "Hello, World! And Modra."
+  String: Sentiment  <- ""
+  String: Slug       <- ""
+  String: Uptime     <- ""
+
+  Action: RunAll -> (
+    Sentiment <- Classify(Text)
+    Slug      <- Slugify(Title)
+    Uptime    <- ReadUptime()
+  )
+
+  Text: SentimentLine <- "Sentiment: " + Sentiment
+  Text: SlugLine      <- "Slug: "      + Slug
+  Text: UptimeLine    <- "Uptime: "    + Uptime + "s"
+
+  form (
+    InputField::Text   placeholder: "Some text"
+    InputField::Title  placeholder: "A blog title"
+    Submit             label: "Run"  Click -> RunAll
+  )
+)

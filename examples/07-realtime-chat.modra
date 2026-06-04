@@ -1,0 +1,71 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// 07 · Realtime chat
+// Demonstrates: a database-backed message store, a polling endpoint, and
+// a tiny chat UI that streams the visible message list reactively.
+// ─────────────────────────────────────────────────────────────────────────────
+
+using Backend.Database as DB
+
+Database: Postgres -> (
+  Table: Channels -> (
+    String: ID    @Primary
+    String: Name  @Unique
+  )
+
+  Table: Messages -> (
+    String:   ID         @Primary
+    String:   ChannelID  @References(Channels.ID)
+    String:   Author
+    String:   Body
+    DateTime: SentAt     @Default(Now) @Indexed
+  )
+)
+
+Endpoint: MessagesSince(channelId: String, since: DateTime) -> (
+  Array<Object>: rows <- DB.Messages
+    .Where(ChannelID: channelId)
+    .Where(SentAt: { greaterThan: since })
+    .OrderBy(SentAt)
+  Return: rows
+)
+
+Endpoint: Send(channelId: String, author: String, body: String) -> (
+  Record: msg <- DB.Messages.Insert(
+    ID:        UUID(),
+    ChannelID: channelId,
+    Author:    author,
+    Body:      body,
+  )
+  Return: msg
+)
+
+Component: ChatRoom -> (
+  String: ChannelID <- "general"
+  String: Me        <- "anonymous"
+  String: Draft     <- ""
+
+  Array<Object>: History <- []
+
+  Action: Refresh -> (
+    DateTime: since <- Now() - Minutes(60)
+    History <- MessagesSince(ChannelID, since)
+  )
+
+  Action: SendMessage -> (
+    Send(ChannelID, Me, Draft)
+    Draft <- ""
+    Refresh()
+  )
+
+  Text: Header <- "#" + ChannelID + " - " + History.length + " message(s)"
+
+  forEach m in History -> (
+    Text: Line (m.Author + ": " + m.Body)
+  )
+
+  form (
+    InputField::Draft  placeholder: "Say something..."
+    Submit             label: "Send"     Click -> SendMessage
+    Submit             label: "Refresh"  Click -> Refresh
+  )
+)
